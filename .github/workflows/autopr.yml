@@ -1,0 +1,157 @@
+name: Auto PR from Discord Submission
+
+on:
+  repository_dispatch:
+    types: [livery-submission]
+  workflow_dispatch:
+    inputs:
+      aircraft_id:
+        description: 'Aircraft ID (e.g. 6131)'
+        required: true
+      aircraft_name:
+        description: 'Aircraft name (e.g. Boeing 737-700)'
+        required: true
+      livery_name:
+        description: 'Livery name'
+        required: true
+      author:
+        description: 'Author'
+        required: true
+      type:
+        description: 'pax / cargo / real / virtual / military / special'
+        required: false
+        default: 'virtual'
+      texture_path:
+        description: 'Repo path, e.g. liveries/b734/Hainan_Airlines_V1.png'
+        required: true
+      index:
+        description: 'JSON array, e.g. [1,2,3,4]'
+        required: false
+        default: '[1,2,3,4]'
+      part:
+        description: 'JSON array, e.g. [0,0,0,0]'
+        required: false
+        default: '[0,0,0,0]'
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Merge submission data
+        env:
+          DISPATCH:    ${{ toJson(github.event.client_payload) }}
+          MANUAL_ID:   ${{ inputs.aircraft_id }}
+          MANUAL_NAME: ${{ inputs.aircraft_name }}
+          MANUAL_LIV:  ${{ inputs.livery_name }}
+          MANUAL_AUTH: ${{ inputs.author }}
+          MANUAL_TYPE: ${{ inputs.type }}
+          MANUAL_PATH: ${{ inputs.texture_path }}
+          MANUAL_IDX:  ${{ inputs.index }}
+          MANUAL_PART: ${{ inputs.part }}
+        run: |
+          node << 'EOF'
+          const fs = require('fs');
+
+          const USER   = '8888CP';
+          const REPO   = 'GeoFS-Livery-Switcher';
+          const BRANCH = 'main';
+          const JSD_BASE = `https://cdn.jsdelivr.net/gh/${USER}/${REPO}@${BRANCH}/`;
+
+          let sub;
+          try {
+            const d = JSON.parse(process.env.DISPATCH || '{}');
+            if (d && d.livery_name) {
+              sub = {
+                aircraftId  : d.aircraft_id,
+                aircraftName: d.aircraft_name,
+                liveryName  : d.livery_name,
+                author      : d.author,
+                type        : d.type || 'virtual',
+                texturePath : d.texture_path,
+                index       : d.index || [1,2,3,4],
+                part        : d.part  || [0,0,0,0]
+              };
+            }
+          } catch (_) {}
+
+          if (!sub) {
+            sub = {
+              aircraftId  : process.env.MANUAL_ID,
+              aircraftName: process.env.MANUAL_NAME,
+              liveryName  : process.env.MANUAL_LIV,
+              author      : process.env.MANUAL_AUTH,
+              type        : process.env.MANUAL_TYPE || 'virtual',
+              texturePath : process.env.MANUAL_PATH,
+              index       : JSON.parse(process.env.MANUAL_IDX  || '[1,2,3,4]'),
+              part        : JSON.parse(process.env.MANUAL_PART || '[0,0,0,0]')
+            };
+          }
+
+          // 相对路径自动拼成 jsDelivr URL
+          const textureUrl = sub.texturePath.startsWith('http')
+            ? sub.texturePath
+            : JSD_BASE + sub.texturePath.replace(/^\/+/, '');
+
+          const data = JSON.parse(fs.readFileSync('./livery.json', 'utf8'));
+          let group = data.find(ac => String(ac.id) === String(sub.aircraftId));
+
+          if (!group) {
+            group = {
+              aircraft: sub.aircraftName,
+              id      : sub.aircraftId,
+              index   : sub.index,
+              part    : sub.part,
+              liveries: []
+            };
+            data.push(group);
+          }
+
+          group.liveries.push({
+            name   : sub.liveryName,
+            author : sub.author,
+            type   : sub.type,
+            tags   : [sub.type],
+            texture: textureUrl
+          });
+
+          fs.writeFileSync('./livery.json', JSON.stringify(data, null, 2));
+
+          fs.writeFileSync('./.pr-meta.json', JSON.stringify({
+            name      : sub.liveryName,
+            author    : sub.author,
+            aircraft  : sub.aircraftName,
+            aircraftId: sub.aircraftId,
+            type      : sub.type,
+            texture   : textureUrl
+          }, null, 2));
+
+          console.log('✅ Added:', sub.liveryName);
+          console.log('   URL:', textureUrl);
+          EOF
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: add new livery"
+          title: "New Livery Submission"
+          body: |
+            ## 🛫 New Livery Submission
+
+            Auto-generated. Review `.pr-meta.json` before merging.
+
+            After merge, jsDelivr will serve the texture within a few minutes.
+          branch: "livery-${{ github.run_number }}"
+          delete-branch: true
