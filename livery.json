@@ -20,20 +20,5 @@
         "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg"
       }
     ]
-  },
-  {
-    "aircraft": "Boeing b777-200f",
-    "id": "6079",
-    "index": [0],
-    "parts": [0],
-    "liveries": [
-      {
-        "name": "DHL (operated by Kalita Air)",
-        "author": "CP8888",
-        "type": "cargo",
-        "tags": ["cargo", "real"],
-        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b777-200f/DHL_N776CL.jpg"
-      }
-    ]
   }
 ]
