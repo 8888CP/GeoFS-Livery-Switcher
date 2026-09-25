@@ -1,16 +1,16 @@
 [
   {
-    "aircraft": "Boeing 737-700",
+    "aircraft": "Boeing b737-400",
     "id": "6131",
-    "index": [1, 2, 3, 4],
-    "part":  [0, 0, 0, 0],
+    "index": [0, 1, 2, 3, 4],
+    "part":  [0, 0, 0, 0, 0],
     "liveries": [
       {
         "name": "Hainan Airlines",
         "author": "KN5290 & CP8888",
         "type": "pax",
         "tags": ["pax", "real"],
-        "thumbnail": "https://1000logos.net/wp-content/uploads/2020/04/Hainan-Airlines-Logo-1993.png",
+        "thumbnail": "https://static.wikia.nocookie.net/logopedia/images/e/ed/Hainan-Airlines-Logo-1989-2009.png/revision/latest/scale-to-width-down/250?cb=20200425154249",
         "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Hainan_Airlines_V1.png"
       }
     ]
