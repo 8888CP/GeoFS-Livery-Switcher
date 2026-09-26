@@ -128,9 +128,9 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
-        "texture": [ 
-            "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
+        ]
       }
     ]
   }
-]
