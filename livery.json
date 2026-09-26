@@ -83,7 +83,7 @@
   {
     "aircraft": "ATR 42-600",
     "id": "2426",
-    "index": [0, 1, 2, 3],
+    "index": [0, 1, 2, 3, 5],
     "parts": [0, 0, 0, 0],
     "liveries": [
       {
@@ -95,7 +95,8 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png"
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_42-600/shaders/freighter42_Metallic.webp"
         ]
       }
     ]
@@ -103,7 +104,7 @@
   {
     "aircraft": "ATR 72-600",
     "id": "2420",
-    "index": [0, 1, 2, 3],
+    "index": [0, 1, 2, 3, 5],
     "parts": [0, 0, 0, 0],
     "liveries": [
       {
@@ -115,7 +116,8 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png"
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_72-600/shaders/freighter_Metallic.webp"
         ]
       }
     ]
