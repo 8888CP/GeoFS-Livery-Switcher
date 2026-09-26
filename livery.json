@@ -18,6 +18,95 @@
         "type": "pax",
         "tags": ["pax", "real"],
         "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg"
+      },
+      {
+        "name": "TwinAir Express (Oni Air livery)",
+        "author": "Nicky",
+        "type": "virtual",
+        "tags": ["virtual", "cargo"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png"
+      }
+    ]
+  },
+  {
+    "aircraft": "Boeing b777-200f",
+    "id": "4402",
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "DHL (operated by Kalita Air)",
+        "author": "CP8888",
+        "type": "cargo",
+        "tags": ["cargo", "real"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b777-200f/DHL_N776CL.jpg"
+      }
+    ]
+  },
+  {
+    "aircraft": "Airbus A330-300",
+    "id": "6012",
+    "index": [0, 1, 2, 3, 5],
+    "parts": [0, 0, 0, 0, 0],
+    "liveries": [
+      {
+        "name": "TwinAir Express",
+        "author": "Nicky",
+        "type": "virtual",
+        "tags": ["virtual", "cargo"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_TWN_1.png"
+      },
+      {
+        "name": "AeroUnion",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "cargo"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_Tampa_3.png"
+      }
+    ]
+  },
+  {
+    "aircraft": "ATR 42-600",
+    "id": "2426",
+    "index": [1, 3, 4, 5],
+    "parts": [0, 0, 0, 0],
+    "liveries": [
+      {
+        "name": "TwinAir Express",
+        "author": "Nicky",
+        "type": "virtual",
+        "tags": ["virtual", "cargo"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_TWN_1.png"
+      }
+    ]
+  },
+  {
+    "aircraft": "ATR 72-600",
+    "id": "2420",
+    "index": [0, 1, 2, 5],
+    "parts": [0, 0, 0, 0],
+    "liveries": [
+      {
+        "name": "TwinAir Express",
+        "author": "Nicky",
+        "type": "virtual",
+        "tags": ["virtual", "cargo"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_TWN.png"
+      }
+    ]
+  },
+  {
+    "aircraft": "Boeing 737-800 (wingletless)",
+    "id": "738nw_267286_6124",
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "TwinAir Express (Argyle Air Cargo livery)",
+        "author": "Nicky",
+        "type": "virtual",
+        "tags": ["virtual", "cargo"],
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
       }
     ]
   }
