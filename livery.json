@@ -54,14 +54,14 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
-        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_TWN_1.png"
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png"
       },
       {
         "name": "AeroUnion",
         "author": "Nicky",
         "type": "real",
         "tags": ["real", "cargo"],
-        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_Tampa_3.png"
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png"
       }
     ]
   },
@@ -76,7 +76,7 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
-        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_TWN_1.png"
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png"
       }
     ]
   },
@@ -91,13 +91,13 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
-        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_TWN.png"
+        "texture": "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png"
       }
     ]
   },
   {
     "aircraft": "Boeing 737-800 (wingletless)",
-    "id": "738nw_267286_6124",
+    "id": "3054",
     "index": [0],
     "parts": [0],
     "liveries": [
