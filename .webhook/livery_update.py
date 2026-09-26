@@ -71,16 +71,18 @@ def detect_changes(prev_idx, curr_idx):
 def build_embeds(changes, all_data):
     """
     Build a list of embeds:
-      [0]  Livery update (title)
+      [0]    Livery update (title)
       [1..n] one per aircraft
-      [n+1] Total: X newly added / Y available
+      [n+1]  Total: X newly added / Y available
     """
     total_available = sum(len(ac.get('liveries', [])) for ac in all_data)
     total_added     = sum(len(ch['added']) for ch in changes)
 
+    COLOR = 0x2b2d31   # same dark gray for every embed
+
     embeds = [{
         'title' : 'Livery update',
-        'color' : 0x2b2d31,
+        'color' : COLOR,
     }]
 
     for ch in changes:
@@ -93,13 +95,13 @@ def build_embeds(changes, all_data):
         embeds.append({
             'title'       : ch['aircraft'],
             'description' : '\n'.join(lines),
-            'color'       : 0x2b2d31,
+            'color'       : COLOR,
         })
 
     # Last embed: totals
     embeds.append({
         'description' : f"**Total**: `{total_added}` newly added / `{total_available}` available",
-        'color'       : 0x5865f2,
+        'color'       : COLOR,
     })
 
     return embeds
@@ -113,7 +115,6 @@ def send_embed(webhook, embed, index, total):
     try:
         r = requests.post(webhook, json=payload, timeout=10)
 
-        # Rate limited → wait and retry once
         if r.status_code == 429:
             retry_after = 1.0
             try:
@@ -160,7 +161,6 @@ def main():
         ok = send_embed(webhook, embed, i, len(embeds))
         if not ok:
             return 1
-        # Space out messages to avoid rate limits
         if i < len(embeds) - 1:
             time.sleep(1.2)
 
