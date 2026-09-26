@@ -21,38 +21,42 @@ jobs:
           node << 'EOF'
           const fs = require('fs');
 
-          const data = JSON.parse(fs.readFileSync('./livery.json', 'utf8'));
+          async function main() {
+            const data = JSON.parse(fs.readFileSync('./livery.json', 'utf8'));
 
-          let totalLiveries = 0;
-          const aircraftList = [];
+            let totalLiveries = 0;
+            const aircraftList = [];
 
-          data.forEach(ac => {
-            const count = (ac.liveries || []).length;
-            totalLiveries += count;
-            if (count > 0) {
-              aircraftList.push(`${ac.aircraft} (${count})`);
-            }
-          });
+            data.forEach(ac => {
+              const count = (ac.liveries || []).length;
+              totalLiveries += count;
+              if (count > 0) {
+                aircraftList.push(`${ac.aircraft} (${count})`);
+              }
+            });
 
-          const commitMsg = process.env.GITHUB_EVENT_HEAD_COMMIT_MESSAGE || 'Manual update';
-          const author = process.env.GITHUB_ACTOR || 'unknown';
+            const commitMsg = process.env.GITHUB_EVENT_HEAD_COMMIT_MESSAGE || 'Manual update';
+            const author = process.env.GITHUB_ACTOR || 'unknown';
 
-          const content = [
-            '🛫 **GeoFS Livery Switcher — Database Updated**',
-            '',
-            `**Author**: ${author}`,
-            `**Commit**: ${commitMsg}`,
-            `**Total liveries**: ${totalLiveries}`,
-            `**Aircraft covered**: ${aircraftList.join(' | ')}`,
-            '',
-            `[View repository](https://github.com/${process.env.GITHUB_REPOSITORY})`
-          ].join('\n');
+            const content = [
+              '🛫 **GeoFS Livery Switcher — Database Updated**',
+              '',
+              `**Author**: ${author}`,
+              `**Commit**: ${commitMsg}`,
+              `**Total liveries**: ${totalLiveries}`,
+              `**Aircraft covered**: ${aircraftList.join(' | ')}`,
+              '',
+              `[View repository](https://github.com/${process.env.GITHUB_REPOSITORY})`
+            ].join('\n');
 
-          await fetch(process.env.DISCORD_WEBHOOK, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content })
-          });
+            await fetch(process.env.DISCORD_WEBHOOK, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ content })
+            });
 
-          console.log('✅ Discord notified');
+            console.log('✅ Discord notified');
+          }
+
+          main().catch(err => { console.error(err); process.exit(1); });
           EOF
