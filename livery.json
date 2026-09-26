@@ -53,9 +53,9 @@
     "aircraft": "Airbus A330-300",
     "id": "6012",
     "labels": {
-      "Texture": [0, 1, 2, 3, 4],
+      "Texture": [0, 1, 2, 3]
     },
-    "index": [0, 1, 2, 3, 4],
+    "index": [0, 1, 2, 3, 5],
     "parts": [0, 0, 0, 0, 0],
     "liveries": [
       {
