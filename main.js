@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.0
+// @version      1.1
 // @description  Aircraft-aware livery browser for GeoFS. Press Shift to toggle.
 // @author       You
 // @match        https://www.geo-fs.com/geofs.php*
@@ -82,25 +82,47 @@
     } catch (e) { return null; }
   }
 
+  /* ---------------------------------------------------------------
+   * 飞机 ID 探测
+   * 优先级（重要）：
+   *   1. aircraftRecord.id  ← 真正代表机型（不会随涂装变化）
+   *   2. fullPath 里的短码    ← 例如 738nw_267286_6124
+   *   3. definition.id / setup.id
+   *   4. instance.id        ← 最后兜底，这个会变，不能信
+   * ------------------------------------------------------------- */
   function getCurrentAircraftId() {
     const inst = getAircraftInstance();
     if (!inst) return null;
 
-    const candidates = [
-      inst.id,
-      inst.aircraftId,
-      inst.definition && inst.definition.id,
-      inst.setup && inst.setup.id,
-      inst.aircraftRecord && inst.aircraftRecord.id,
-      inst.definition && inst.definition.acid,
-      inst.fullPath && inst.fullPath.split('/').filter(Boolean).pop(),
-      inst.definition && inst.definition.fullPath
-        && inst.definition.fullPath.split('/').filter(Boolean).pop()
-    ];
-
-    for (const c of candidates) {
-      if (c != null && c !== '') return String(c);
+    // 1. aircraftRecord.id —— 最可靠
+    if (inst.aircraftRecord && inst.aircraftRecord.id != null && inst.aircraftRecord.id !== '') {
+      return String(inst.aircraftRecord.id);
     }
+
+    // 2. fullPath 倒数第二段
+    const fp = (inst.fullPath || (inst.definition && inst.definition.fullPath) || '').trim();
+    if (fp) {
+      const parts = fp.split('/').filter(Boolean);
+      if (parts.length >= 2) {
+        const code = parts[parts.length - 2];
+        if (code) return String(code);
+      }
+    }
+
+    // 3. definition.id / setup.id
+    if (inst.definition && inst.definition.id != null && inst.definition.id !== '') {
+      return String(inst.definition.id);
+    }
+    if (inst.setup && inst.setup.id != null && inst.setup.id !== '') {
+      return String(inst.setup.id);
+    }
+    if (inst.definition && inst.definition.acid != null && inst.definition.acid !== '') {
+      return String(inst.definition.acid);
+    }
+
+    // 4. 兜底：instance.id（会变，最后才用）
+    if (inst.id != null && inst.id !== '') return String(inst.id);
+
     return null;
   }
 
@@ -120,7 +142,22 @@
 
     if (!acId) return [];
 
-    const group = groups.find(g => String(g.id) === acId);
+    // 优先精确匹配 id
+    let group = groups.find(g => String(g.id) === acId);
+
+    // 匹配不到，再试 fullPath 里的长码
+    if (!group) {
+      const inst = getAircraftInstance();
+      const fp = (inst && inst.fullPath || '').trim();
+      if (fp) {
+        const parts = fp.split('/').filter(Boolean);
+        const longCode = parts[parts.length - 2];
+        if (longCode) {
+          group = groups.find(g => String(g.id) === longCode);
+        }
+      }
+    }
+
     if (!group) return [];
 
     return (group.liveries || []).map(lv => Object.assign({}, lv, {
@@ -409,6 +446,7 @@
     return el;
   }
 
+  /* ---------- 换涂装：支持 texture 为字符串或数组 ---------- */
   function applyLivery(livery, cardEl) {
     const inst = getAircraftInstance();
     if (!inst) return;
@@ -416,8 +454,13 @@
     const acId = getCurrentAircraftId();
     if (livery._aircraftId && acId && String(livery._aircraftId) !== acId) return;
 
-    const url = resolveUrl(livery.texture || livery.textureUrl);
-    if (!url) return;
+    const texRaw = livery.texture || livery.textureUrl;
+    if (!texRaw) return;
+
+    const texUrls = (Array.isArray(texRaw) ? texRaw : [texRaw])
+      .map(u => resolveUrl(u))
+      .filter(Boolean);
+    if (!texUrls.length) return;
 
     const indexes = Array.isArray(livery._index) ? livery._index : [livery._index];
     const parts   = Array.isArray(livery._parts) ? livery._parts : [livery._parts];
@@ -430,7 +473,7 @@
     const version = parseFloat(g && g.version) || 0;
     const api = g && g.api;
 
-    LOG(`Applying "${livery.name}" — GeoFS v${version}, indexes=[${indexes}], parts=[${parts}]`);
+    LOG(`Applying "${livery.name}" — GeoFS v${version}, indexes=[${indexes}], parts=[${parts}], textures=${texUrls.length}`);
 
     if (cardEl) cardEl.classList.add('gfl-loading');
 
@@ -440,6 +483,8 @@
       const partIdx = parts[i] != null ? parts[i] : 0;
       const texIdx  = indexes[i];
       if (texIdx == null) continue;
+
+      const texUrl = texUrls[i] || texUrls[0];
 
       const part = def.parts[partIdx];
       if (!part) { ERR('Part not found at index', partIdx); continue; }
@@ -452,13 +497,13 @@
 
       try {
         if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
-          api.Model.prototype.changeTexture(url, texIdx, model3d);
+          api.Model.prototype.changeTexture(texUrl, texIdx, model3d);
         } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, url, texIdx);
+          api.changeModelTexture(model3d._model, texUrl, texIdx);
         } else if (typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, url, { index: texIdx });
+          api.changeModelTexture(model3d._model, texUrl, { index: texIdx });
         } else if (model3d._model.changeTexture) {
-          model3d._model.changeTexture(url, { index: texIdx });
+          model3d._model.changeTexture(texUrl, { index: texIdx });
         } else {
           throw new Error('No texture-change API available');
         }
@@ -469,6 +514,8 @@
     }
 
     if (cardEl) cardEl.classList.remove('gfl-loading');
+
+    LOG(`Applied ${changed}/${indexes.length} slot(s)`);
   }
 
   W.GeoFSLiverySwitcher = {
@@ -481,10 +528,9 @@
       console.log('geofs.version:', g && g.version);
       console.log('instance:', inst);
       console.log('instance.id:', inst && inst.id);
-      console.log('instance.aircraftId:', inst && inst.aircraftId);
+      console.log('instance.aircraftRecord.id:', inst && inst.aircraftRecord && inst.aircraftRecord.id);
       console.log('instance.definition.id:', inst && inst.definition && inst.definition.id);
       console.log('instance.setup.id:', inst && inst.setup && inst.setup.id);
-      console.log('instance.aircraftRecord.id:', inst && inst.aircraftRecord && inst.aircraftRecord.id);
       console.log('instance.fullPath:', inst && inst.fullPath);
       console.log('resolved id:', getCurrentAircraftId());
       console.log('-----------------------------------');
@@ -518,7 +564,7 @@
   }
 
   (function init() {
-    LOG('Version 1.0');
+    LOG('Version 1.1');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
     requestAnimationFrame(() => {
