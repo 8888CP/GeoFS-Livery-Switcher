@@ -43,6 +43,19 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png"
         ]
+      },
+      {
+        "name": "Test 20260926",
+        "author": "CP8888",
+        "type": "pax",
+        "tags": ["pax"],
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg"
+        ]
       }
     ]
   },
