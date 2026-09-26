@@ -3,37 +3,16 @@
     "aircraft": "Boeing 737-400",
     "id": "6131",
     "labels": {
-      "Texture": [
-        0,
-        1,
-        2,
-        3,
-        4
-      ]
+      "Texture": [0, 1, 2, 3, 4]
     },
-    "index": [
-      0,
-      1,
-      2,
-      3,
-      4
-    ],
-    "parts": [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
+    "index": [0, 1, 2, 3, 4],
+    "parts": [0, 0, 0, 0, 0],
     "liveries": [
       {
         "name": "Hainan Airlines V1",
         "author": "CP8888 & KN5290",
         "type": "pax",
-        "tags": [
-          "pax",
-          "real"
-        ],
+        "tags": ["pax", "real"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Hainan_Airlines_V1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Hainan_Airlines_V1.png",
@@ -46,10 +25,7 @@
         "name": "Avior Airlines",
         "author": "CP8888",
         "type": "pax",
-        "tags": [
-          "pax",
-          "real"
-        ],
+        "tags": ["pax", "real"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
@@ -62,11 +38,7 @@
         "name": "TwinAir Express (Oni Air livery)",
         "author": "Nicky",
         "type": "virtual",
-        "tags": [
-          "virtual",
-          "cargo",
-          "special"
-        ],
+        "tags": ["virtual", "cargo", "special"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
@@ -81,37 +53,17 @@
     "aircraft": "Airbus A330-300",
     "id": "6012",
     "labels": {
-      "Texture": [
-        0,
-        1,
-        2,
-        3,
-        4
-      ]
+      "Texture": [0, 1, 2, 3],
+      "Wing texture": [5]
     },
-    "index": [
-      0,
-      1,
-      2,
-      3,
-      5
-    ],
-    "parts": [
-      0,
-      0,
-      0,
-      0,
-      0
-    ],
+    "index": [0, 1, 2, 3, 5],
+    "parts": [0, 0, 0, 0, 0],
     "liveries": [
       {
         "name": "TwinAir Express",
         "author": "Nicky",
         "type": "virtual",
-        "tags": [
-          "virtual",
-          "cargo"
-        ],
+        "tags": ["virtual", "cargo"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png",
@@ -124,10 +76,7 @@
         "name": "AeroUnion",
         "author": "Nicky",
         "type": "real",
-        "tags": [
-          "real",
-          "cargo"
-        ],
+        "tags": ["real", "cargo"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
@@ -142,34 +91,16 @@
     "aircraft": "ATR 42-600",
     "id": "2426",
     "labels": {
-      "Texture": [
-        0,
-        1,
-        2,
-        3
-      ]
+      "Texture": [0, 1, 2, 3]
     },
-    "index": [
-      0,
-      1,
-      2,
-      3
-    ],
-    "parts": [
-      0,
-      0,
-      0,
-      0
-    ],
+    "index": [0, 1, 2, 3],
+    "parts": [0, 0, 0, 0],
     "liveries": [
       {
         "name": "TwinAir Express",
         "author": "Nicky",
         "type": "virtual",
-        "tags": [
-          "virtual",
-          "cargo"
-        ],
+        "tags": ["virtual", "cargo"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
@@ -183,34 +114,16 @@
     "aircraft": "ATR 72-600",
     "id": "2420",
     "labels": {
-      "Texture": [
-        0,
-        1,
-        2,
-        3
-      ]
+      "Texture": [0, 1, 2, 3]
     },
-    "index": [
-      0,
-      1,
-      2,
-      3
-    ],
-    "parts": [
-      0,
-      0,
-      0,
-      0
-    ],
+    "index": [0, 1, 2, 3],
+    "parts": [0, 0, 0, 0],
     "liveries": [
       {
         "name": "TwinAir Express",
         "author": "Nicky",
         "type": "virtual",
-        "tags": [
-          "virtual",
-          "cargo"
-        ],
+        "tags": ["virtual", "cargo"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
@@ -224,26 +137,16 @@
     "aircraft": "Boeing 737-800 (wingletless)",
     "id": "3054",
     "labels": {
-      "Texture": [
-        0
-      ]
+      "Texture": [0]
     },
-    "index": [
-      0
-    ],
-    "parts": [
-      0
-    ],
+    "index": [0],
+    "parts": [0],
     "liveries": [
       {
         "name": "TwinAir Express (Argyle Air Cargo livery)",
         "author": "Nicky",
         "type": "virtual",
-        "tags": [
-          "virtual",
-          "cargo",
-          "special"
-        ],
+        "tags": ["virtual", "cargo", "special"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
         ]
@@ -254,26 +157,16 @@
     "aircraft": "Airbus A340-600",
     "id": "5998",
     "labels": {
-      "Texture": [
-        0
-      ]
+      "Texture": [0]
     },
-    "index": [
-      0
-    ],
-    "parts": [
-      0
-    ],
+    "index": [0],
+    "parts": [0],
     "liveries": [
       {
         "name": "Virgin Atlantic (A big Virgin Atlantic thank you livery)",
         "author": "A 5APU",
         "type": "real",
-        "tags": [
-          "real",
-          "pax",
-          "special"
-        ],
+        "tags": ["real", "pax", "special"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a346/a340-600 abig.png"
         ]
@@ -284,30 +177,17 @@
     "aircraft": "Boeing 777-200ER",
     "id": "240",
     "labels": {
-      "Texture": [
-        1
-      ],
-      "Metallic Roughness shader": [
-        0
-      ]
+      "Texture": [1],
+      "Metallic Roughness shader": [0]
     },
-    "index": [
-      1,
-      0
-    ],
-    "parts": [
-      0,
-      0
-    ],
+    "index": [1, 0],
+    "parts": [0, 0],
     "liveries": [
       {
         "name": "Asiana Airlines (old design)",
         "author": "A 5APU",
         "type": "real",
-        "tags": [
-          "real",
-          "pax"
-        ],
+        "tags": ["real", "pax"],
         "texture": [
           "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/boeing_b777-200er/shaders/original.webp",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b772ER/772 asiana old.png"
