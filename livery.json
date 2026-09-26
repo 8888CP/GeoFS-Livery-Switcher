@@ -84,6 +84,19 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png"
         ]
+      },
+      {
+        "name": "Lion Air",
+        "author": "Nicky & CP8888",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg"
+        ]
       }
     ]
   },

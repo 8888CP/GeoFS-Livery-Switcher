@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.3
+// @version      1.5
 // @description  Aircraft-aware livery browser for GeoFS. Press Shift to toggle.
 // @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
@@ -50,7 +50,7 @@
 
   function resolveUrl(u, base) {
     if (!u) return '';
-    if (/^(https?:)?\/\//i.test(u) || u.startsWith('data:')) return u;
+    if (/^(https?:)?\/\//i.test(u) || u.startsWith('data:') || u.startsWith('blob:')) return u;
     try { return new URL(u, base || CONFIG.jsonUrl).href; } catch (e) { return u; }
   }
 
@@ -142,7 +142,6 @@
     }));
   }
 
-  /* ---------- 获取当前飞机的槽位定义 ---------- */
   function getSlotLabels() {
     const inst = getAircraftInstance();
     if (!inst) return null;
@@ -168,6 +167,140 @@
 
     out.sort((a, b) => a.slots[0] - b.slots[0]);
     return out;
+  }
+
+  /* ============================================================
+   *  优化点 1：缓存 3D 模型数组
+   *  每次换飞机（或模型结构变化）只重新计算一次
+   * ============================================================ */
+  let _cachedDef = null;
+  let _cachedModels = null;
+
+  function getCachedModels() {
+    const inst = getAircraftInstance();
+    if (!inst) return null;
+
+    const def = inst.definition || inst.setup;
+    if (!def || !def.parts) return null;
+
+    // 如果 definition 对象没变，直接用缓存
+    if (_cachedDef === def && _cachedModels) return _cachedModels;
+
+    const models = [];
+    for (let p = 0; p < def.parts.length; p++) {
+      const part = def.parts[p];
+      if (!part) continue;
+      const model3d = part['3dmodel'];
+      if (model3d && model3d._model) {
+        models.push({ part: p, model3d });
+      }
+    }
+
+    _cachedDef = def;
+    _cachedModels = models;
+    return models;
+  }
+
+  function invalidateModelCache() {
+    _cachedDef = null;
+    _cachedModels = null;
+  }
+
+  /* ============================================================
+   *  优化点 2：统一的贴图应用函数
+   *  提前确定 API 调用路径，避免每次循环重复判断
+   * ============================================================ */
+  function makeApplier() {
+    const g = W.geofs;
+    if (!g) return null;
+
+    const version = parseFloat(g.version) || 0;
+    const api = g.api;
+
+    if (typeof api?.changeModelTexture === 'function') {
+      if (version >= 3.0 && version <= 3.7) {
+        return (model3d, url, idx) => api.changeModelTexture(model3d._model, url, idx);
+      }
+      return (model3d, url, idx) => api.changeModelTexture(model3d._model, url, { index: idx });
+    }
+
+    if (version === 2.9 && api?.Model?.prototype?.changeTexture) {
+      return (model3d, url, idx) => api.Model.prototype.changeTexture(url, idx, model3d);
+    }
+
+    if (typeof api?.changeModelTexture === 'function') {
+      return (model3d, url, idx) => api.changeModelTexture(model3d._model, url, { index: idx });
+    }
+
+    return null;
+  }
+
+  function applyTestTexture(src, slots) {
+    const models = getCachedModels();
+    if (!models || !models.length) {
+      toast('Aircraft model not ready');
+      return;
+    }
+
+    const apply = makeApplier();
+    if (!apply) {
+      toast('No texture-change API available');
+      return;
+    }
+
+    const t0 = performance.now();
+    let applied = 0;
+
+    for (const slot of slots) {
+      for (const { model3d } of models) {
+        try {
+          apply(model3d, src, slot);
+          applied++;
+        } catch (err) {
+          ERR('apply failed — slot ' + slot, err);
+        }
+      }
+    }
+
+    const dt = (performance.now() - t0).toFixed(1);
+    LOG(`Test applied to slots [${slots}] in ${dt}ms — ${applied} call(s)`);
+  }
+
+  /* ============================================================
+   *  优化点 3：预创建 <input type="file">
+   * ============================================================ */
+  const _fileInput = document.createElement('input');
+  _fileInput.type = 'file';
+  _fileInput.accept = 'image/*';
+  _fileInput.style.display = 'none';
+  document.body.appendChild(_fileInput);
+
+  let _currentSlots = null;
+
+  _fileInput.addEventListener('change', () => {
+    const f = _fileInput.files && _fileInput.files[0];
+    _fileInput.value = '';
+    if (!f || !_currentSlots) return;
+
+    if (!f.type || !f.type.startsWith('image/')) {
+      toast('Only image files are supported');
+      _currentSlots = null;
+      return;
+    }
+
+    // 用 Blob URL —— 跳过 base64 编码
+    const blobUrl = URL.createObjectURL(f);
+    applyTestTexture(blobUrl, _currentSlots);
+
+    // 30 秒后释放（足够 Cesium 加载完）
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+
+    _currentSlots = null;
+  });
+
+  function pickAndApply(slots) {
+    _currentSlots = slots;
+    _fileInput.click();
   }
 
   /* ---------- Panel ---------- */
@@ -246,6 +379,9 @@
   const modalBody     = modal.querySelector('.gfl-modal-body');
 
   function openModal() {
+    // 打开时预热模型缓存
+    invalidateModelCache();
+    getCachedModels();
     modal.classList.remove('gfl-hidden');
     renderModalBody();
   }
@@ -275,19 +411,14 @@
       </div>
     `).join('');
 
-    // 绑定每行的点击 & 拖拽
     modalBody.querySelectorAll('.gfl-slot-row').forEach(rowEl => {
       const rowIdx = Number(rowEl.dataset.row);
       const row = labels[rowIdx];
       if (!row) return;
 
-      // 点击按钮 → 打开文件选择器
       const btn = rowEl.querySelector('.gfl-slot-btn');
-      btn.addEventListener('click', () => {
-        pickAndApply(row.slots);
-      });
+      btn.addEventListener('click', () => pickAndApply(row.slots));
 
-      // 整行支持拖入
       rowEl.addEventListener('dragover', e => {
         e.preventDefault();
         e.stopPropagation();
@@ -310,77 +441,13 @@
           toast('Only image files are supported');
           return;
         }
-        const reader = new FileReader();
-        reader.onload = () => {
-          applyTestTexture(reader.result, row.slots);
-        };
-        reader.onerror = () => toast('Failed to read file');
-        reader.readAsDataURL(f);
+
+        // Blob URL，跳过 base64
+        const blobUrl = URL.createObjectURL(f);
+        applyTestTexture(blobUrl, row.slots);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
       });
     });
-  }
-
-  function pickAndApply(slots) {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.addEventListener('change', () => {
-      const f = input.files && input.files[0];
-      if (!f) return;
-      if (!f.type.startsWith('image/')) {
-        toast('Only image files are supported');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        applyTestTexture(reader.result, slots);
-      };
-      reader.onerror = () => toast('Failed to read file');
-      reader.readAsDataURL(f);
-    });
-    input.click();
-  }
-
-  function applyTestTexture(dataUrl, slots) {
-    const inst = getAircraftInstance();
-    if (!inst) return;
-
-    const def = inst.definition || inst.setup;
-    if (!def || !def.parts) return;
-
-    const g = W.geofs;
-    const version = parseFloat(g && g.version) || 0;
-    const api = g && g.api;
-
-    let applied = 0;
-
-    for (const slot of slots) {
-      for (let p = 0; p < def.parts.length; p++) {
-        const part = def.parts[p];
-        if (!part) continue;
-        const model3d = part['3dmodel'];
-        if (!model3d || !model3d._model) continue;
-
-        try {
-          if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
-            api.Model.prototype.changeTexture(dataUrl, slot, model3d);
-          } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
-            api.changeModelTexture(model3d._model, dataUrl, slot);
-          } else if (typeof api.changeModelTexture === 'function') {
-            api.changeModelTexture(model3d._model, dataUrl, { index: slot });
-          } else if (model3d._model.changeTexture) {
-            model3d._model.changeTexture(dataUrl, { index: slot });
-          }
-          applied++;
-        } catch (err) {
-          ERR('Test apply failed for slot ' + slot + ' part ' + p, err);
-        }
-      }
-    }
-
-    if (applied > 0) {
-      LOG(`Test texture applied to slots [${slots}]`);
-    }
   }
 
   testBtn.addEventListener('click', () => {
@@ -476,27 +543,10 @@
   .gfl-modal-body::-webkit-scrollbar-thumb:hover{background:rgba(88,166,255,.55)}
   .gfl-modal-empty{text-align:center;padding:30px 16px;color:#5d6b80;font-size:12px}
   .gfl-modal-empty code{color:#8fa5c2;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px}
-
-  /* Slot rows */
-  .gfl-slot-row{
-    display:flex;align-items:center;gap:12px;margin-bottom:8px;
-    padding:6px;border-radius:10px;
-    border:2px dashed transparent;
-    transition:border-color .18s ease, background .18s ease;
-  }
+  .gfl-slot-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:6px;border-radius:10px;border:2px dashed transparent;transition:border-color .18s ease,background .18s ease}
   .gfl-slot-row:last-child{margin-bottom:0}
-  .gfl-slot-row.gfl-row-dragover{
-    border-color:rgba(88,166,255,.70);
-    background:rgba(88,166,255,.12);
-  }
-  .gfl-slot-btn{
-    flex-shrink:0;width:150px;height:40px;border:none;border-radius:8px;
-    background:linear-gradient(180deg,#ff9a3c 0%,#e07820 100%);
-    color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.5px;
-    cursor:pointer;pointer-events:auto;
-    transition:transform .12s ease,box-shadow .18s ease,filter .18s ease;
-    box-shadow:0 6px 14px -6px rgba(224,120,32,.55),inset 0 1px 0 rgba(255,255,255,.25);
-  }
+  .gfl-slot-row.gfl-row-dragover{border-color:rgba(88,166,255,.70);background:rgba(88,166,255,.12)}
+  .gfl-slot-btn{flex-shrink:0;width:150px;height:40px;border:none;border-radius:8px;background:linear-gradient(180deg,#ff9a3c 0%,#e07820 100%);color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.5px;cursor:pointer;pointer-events:auto;transition:transform .12s ease,box-shadow .18s ease,filter .18s ease;box-shadow:0 6px 14px -6px rgba(224,120,32,.55),inset 0 1px 0 rgba(255,255,255,.25)}
   .gfl-slot-btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 20px -8px rgba(224,120,32,.7),inset 0 1px 0 rgba(255,255,255,.3)}
   .gfl-slot-btn:active{transform:translateY(0);filter:brightness(.95)}
   .gfl-slot-name{flex:1;font-size:13px;color:#cfdaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
@@ -673,13 +723,19 @@
     const acId = getCurrentAircraftId();
     if (livery._aircraftId && acId && String(livery._aircraftId) !== acId) return;
 
-    const def = inst.definition || inst.setup;
-    if (!def || !def.parts) return;
-
     const texRaw   = livery.texture || livery.textureUrl;
     const idxRaw   = livery._index;
     const partsRaw = livery._parts;
     if (!texRaw) return;
+
+    const models = getCachedModels();
+    if (!models || !models.length) {
+      ERR('No models cached');
+      return;
+    }
+
+    const apply = makeApplier();
+    if (!apply) { ERR('No texture-change API available'); return; }
 
     const items = [];
 
@@ -712,49 +768,39 @@
     const valid = items.filter(it => it.url && it.index != null);
     if (!valid.length) return;
 
-    const g = W.geofs;
-    const version = parseFloat(g && g.version) || 0;
-    const api = g && g.api;
-
     LOG(`Applying "${livery.name}" — ${valid.length} item(s)`);
 
     if (cardEl) cardEl.classList.add('gfl-loading');
 
+    // 按 part 分组，避免重复遍历
+    const byPart = new Map();
+    for (const it of valid) {
+      const p = it.part != null ? it.part : 0;
+      if (!byPart.has(p)) byPart.set(p, []);
+      byPart.get(p).push(it);
+    }
+
+    const t0 = performance.now();
     let changed = 0;
 
-    for (const item of valid) {
-      const partIdx = item.part != null ? item.part : 0;
-      const texIdx  = item.index;
+    for (const { part: pIdx, model3d } of models) {
+      const list = byPart.get(pIdx);
+      if (!list || !list.length) continue;
 
-      const part = def.parts[partIdx];
-      if (!part) { ERR('Part not found', partIdx); continue; }
-
-      const model3d = part['3dmodel'];
-      if (!model3d || !model3d._model) {
-        ERR('3dmodel not found', partIdx);
-        continue;
-      }
-
-      try {
-        if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
-          api.Model.prototype.changeTexture(item.url, texIdx, model3d);
-        } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, item.url, texIdx);
-        } else if (typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, item.url, { index: texIdx });
-        } else if (model3d._model.changeTexture) {
-          model3d._model.changeTexture(item.url, { index: texIdx });
-        } else {
-          throw new Error('No texture-change API available');
+      for (const it of list) {
+        try {
+          apply(model3d, it.url, it.index);
+          changed++;
+        } catch (err) {
+          ERR('Failed slot ' + it.index + ' part ' + pIdx, err);
         }
-        changed++;
-      } catch (err) {
-        ERR('Failed slot ' + texIdx, err);
       }
     }
 
+    const dt = (performance.now() - t0).toFixed(1);
+
     if (cardEl) cardEl.classList.remove('gfl-loading');
-    LOG(`Applied ${changed}/${valid.length} slot(s)`);
+    LOG(`Applied ${changed}/${valid.length} slot(s) in ${dt}ms`);
   }
 
   W.GeoFSLiverySwitcher = {
@@ -771,6 +817,7 @@
       console.log('resolved id:', getCurrentAircraftId());
       console.log('slot labels:', getSlotLabels());
       console.log('current group:', findCurrentGroup(state.groups));
+      console.log('cached models:', getCachedModels());
       console.log('-----------------------------------');
     }
   };
@@ -797,12 +844,16 @@
     }
     state.groups = groups;
     state.data = flattenForCurrentAircraft(groups);
+
+    // 飞机切换后清缓存
+    invalidateModelCache();
+
     renderSelect();
     renderList();
   }
 
   (function init() {
-    LOG('Version 1.4');
+    LOG('Version 1.5');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
     requestAnimationFrame(() => {
@@ -820,6 +871,7 @@
       if (now !== lastId) {
         LOG('Aircraft changed:', lastId, '→', now);
         lastId = now;
+        invalidateModelCache();
         loadData();
       }
     }
