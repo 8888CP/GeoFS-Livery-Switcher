@@ -1,6 +1,6 @@
 [
   {
-    "aircraft": "Boeing b737-400",
+    "aircraft": "Boeing 737-400",
     "id": "6131",
     "index": [0, 1, 2, 3, 4],
     "parts": [0, 0, 0, 0, 0],
@@ -121,7 +121,7 @@
     ]
   },
   {
-    "aircraft": "Boeing b737-800 (wingletless)",
+    "aircraft": "Boeing 737-800 (wingletless)",
     "id": "3054",
     "index": [0],
     "parts": [0],
