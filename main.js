@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.1
+// @version      1.2
 // @description  Aircraft-aware livery browser for GeoFS. Press Shift to toggle.
-// @author       CP8888
+// @author       You
 // @match        https://www.geo-fs.com/geofs.php*
 // @match        https://geo-fs.com/geofs.php*
 // @icon         https://www.geo-fs.com/favicon.ico
@@ -82,24 +82,13 @@
     } catch (e) { return null; }
   }
 
-  /* ---------------------------------------------------------------
-   * 飞机 ID 探测
-   * 优先级（重要）：
-   *   1. aircraftRecord.id  ← 真正代表机型（不会随涂装变化）
-   *   2. fullPath 里的短码    ← 例如 738nw_267286_6124
-   *   3. definition.id / setup.id
-   *   4. instance.id        ← 最后兜底，这个会变，不能信
-   * ------------------------------------------------------------- */
   function getCurrentAircraftId() {
     const inst = getAircraftInstance();
     if (!inst) return null;
 
-    // 1. aircraftRecord.id —— 最可靠
     if (inst.aircraftRecord && inst.aircraftRecord.id != null && inst.aircraftRecord.id !== '') {
       return String(inst.aircraftRecord.id);
     }
-
-    // 2. fullPath 倒数第二段
     const fp = (inst.fullPath || (inst.definition && inst.definition.fullPath) || '').trim();
     if (fp) {
       const parts = fp.split('/').filter(Boolean);
@@ -108,21 +97,10 @@
         if (code) return String(code);
       }
     }
-
-    // 3. definition.id / setup.id
-    if (inst.definition && inst.definition.id != null && inst.definition.id !== '') {
-      return String(inst.definition.id);
-    }
-    if (inst.setup && inst.setup.id != null && inst.setup.id !== '') {
-      return String(inst.setup.id);
-    }
-    if (inst.definition && inst.definition.acid != null && inst.definition.acid !== '') {
-      return String(inst.definition.acid);
-    }
-
-    // 4. 兜底：instance.id（会变，最后才用）
+    if (inst.definition && inst.definition.id != null && inst.definition.id !== '') return String(inst.definition.id);
+    if (inst.setup && inst.setup.id != null && inst.setup.id !== '') return String(inst.setup.id);
+    if (inst.definition && inst.definition.acid != null && inst.definition.acid !== '') return String(inst.definition.acid);
     if (inst.id != null && inst.id !== '') return String(inst.id);
-
     return null;
   }
 
@@ -136,28 +114,25 @@
     return JSON.parse(text);
   }
 
-  function flattenForCurrentAircraft(groups) {
+  function findCurrentGroup(groups) {
     const acId = getCurrentAircraftId();
-    state.currentAcId = acId;
-
-    if (!acId) return [];
-
-    // 优先精确匹配 id
-    let group = groups.find(g => String(g.id) === acId);
-
-    // 匹配不到，再试 fullPath 里的长码
-    if (!group) {
+    if (!acId) return null;
+    let g = groups.find(x => String(x.id) === acId);
+    if (!g) {
       const inst = getAircraftInstance();
       const fp = (inst && inst.fullPath || '').trim();
       if (fp) {
         const parts = fp.split('/').filter(Boolean);
         const longCode = parts[parts.length - 2];
-        if (longCode) {
-          group = groups.find(g => String(g.id) === longCode);
-        }
+        if (longCode) g = groups.find(x => String(x.id) === longCode);
       }
     }
+    return g || null;
+  }
 
+  function flattenForCurrentAircraft(groups) {
+    state.currentAcId = getCurrentAircraftId();
+    const group = findCurrentGroup(groups);
     if (!group) return [];
 
     return (group.liveries || []).map(lv => Object.assign({}, lv, {
@@ -167,6 +142,34 @@
     }));
   }
 
+  /* ---------- 获取当前飞机的槽位定义（labels） ---------- */
+  function getSlotLabels() {
+    const inst = getAircraftInstance();
+    if (!inst) return null;
+
+    const def = inst.definition || inst.setup;
+    if (!def) return null;
+
+    // labels 优先，不同版本可能在 definition.labels 或 setup.labels
+    const labels = def.labels || (inst.definition && inst.definition.labels);
+    if (!labels) return null;
+
+    // 把 { "Texture": [0], "Wing texture": [1] } 展平成 [{ name, slot }]
+    const out = [];
+    Object.keys(labels).forEach(name => {
+      const slots = Array.isArray(labels[name]) ? labels[name] : [labels[name]];
+      slots.forEach(slot => {
+        if (slot != null && !isNaN(Number(slot))) {
+          out.push({ name, slot: Number(slot) });
+        }
+      });
+    });
+
+    out.sort((a, b) => a.slot - b.slot);
+    return out;
+  }
+
+  /* ---------- Panel ---------- */
   const panel = document.createElement('div');
   panel.id = 'gfl-panel';
   panel.className = 'gfl-panel' + (state.open ? '' : ' gfl-hidden');
@@ -196,6 +199,7 @@
     <div class="gfl-list"></div>
     <div class="gfl-footer">
       <span class="gfl-count">0 liveries</span>
+      <button class="gfl-test-btn" title="Test a livery">Test Livery</button>
       <button class="gfl-reload" title="Reload JSON">↻</button>
       <span class="gfl-hint"><kbd>Shift</kbd> to hide</span>
     </div>
@@ -214,6 +218,146 @@
   const listEl      = $('.gfl-list');
   const countEl     = $('.gfl-count');
   const reloadBtn   = $('.gfl-reload');
+  const testBtn     = $('.gfl-test-btn');
+
+  /* ---------- Test modal ---------- */
+  const modal = document.createElement('div');
+  modal.id = 'gfl-modal';
+  modal.className = 'gfl-modal gfl-hidden';
+  modal.innerHTML = `
+    <div class="gfl-modal-backdrop"></div>
+    <div class="gfl-modal-box">
+      <div class="gfl-modal-header">
+        <span>Test Livery</span>
+        <button class="gfl-modal-close" title="Close">✕</button>
+      </div>
+      <div class="gfl-modal-body"></div>
+      <div class="gfl-modal-footer">
+        <button class="gfl-modal-cancel">Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  const modalBackdrop = modal.querySelector('.gfl-modal-backdrop');
+  const modalClose    = modal.querySelector('.gfl-modal-close');
+  const modalCancel   = modal.querySelector('.gfl-modal-cancel');
+  const modalBody     = modal.querySelector('.gfl-modal-body');
+
+  function openModal() {
+    modal.classList.remove('gfl-hidden');
+    renderModalBody();
+  }
+  function closeModal() {
+    modal.classList.add('gfl-hidden');
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalCancel.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', closeModal);
+
+  /* ---------- 生成 modal 内容：每个槽位一行 ---------- */
+  function renderModalBody() {
+    const labels = getSlotLabels();
+
+    if (!labels || !labels.length) {
+      modalBody.innerHTML = `
+        <div class="gfl-modal-empty">
+          This aircraft has no slot definitions (<code>labels</code>) available.
+        </div>`;
+      return;
+    }
+
+    modalBody.innerHTML = labels.map(item => `
+      <div class="gfl-slot-row" data-slot="${item.slot}">
+        <button class="gfl-slot-btn" data-slot="${item.slot}">LOAD IMAGE</button>
+        <span class="gfl-slot-name">${esc(item.name)}</span>
+      </div>
+    `).join('');
+
+    // 绑定按钮
+    modalBody.querySelectorAll('.gfl-slot-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const slot = Number(btn.dataset.slot);
+        pickAndApply(slot);
+      });
+    });
+  }
+
+  /* ---------- 选择文件并应用到指定槽位 ---------- */
+  function pickAndApply(slot) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.addEventListener('change', () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      if (!f.type.startsWith('image/')) {
+        toast('Only image files are supported');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        applyTestTexture(reader.result, slot);
+      };
+      reader.onerror = () => toast('Failed to read file');
+      reader.readAsDataURL(f);
+    });
+    input.click();
+  }
+
+  /* ---------- 应用到指定槽位 ---------- */
+  function applyTestTexture(dataUrl, slot) {
+    const inst = getAircraftInstance();
+    if (!inst) { toast('No aircraft loaded'); return; }
+
+    const def = inst.definition || inst.setup;
+    if (!def || !def.parts) { toast('Aircraft definition not found'); return; }
+
+    const g = W.geofs;
+    const version = parseFloat(g && g.version) || 0;
+    const api = g && g.api;
+
+    // 遍历部件，找到第一个含该槽位的模型
+    let applied = 0;
+
+    for (let p = 0; p < def.parts.length; p++) {
+      const part = def.parts[p];
+      if (!part) continue;
+      const model3d = part['3dmodel'];
+      if (!model3d || !model3d._model) continue;
+
+      try {
+        if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
+          api.Model.prototype.changeTexture(dataUrl, slot, model3d);
+        } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
+          api.changeModelTexture(model3d._model, dataUrl, slot);
+        } else if (typeof api.changeModelTexture === 'function') {
+          api.changeModelTexture(model3d._model, dataUrl, { index: slot });
+        } else if (model3d._model.changeTexture) {
+          model3d._model.changeTexture(dataUrl, { index: slot });
+        } else {
+          throw new Error('No texture-change API available');
+        }
+        applied++;
+      } catch (err) {
+        ERR('Test apply failed for slot ' + slot + ' part ' + p, err);
+      }
+    }
+
+    if (applied > 0) {
+      toast(`Test applied to slot ${slot}`);
+      LOG(`Test texture applied to slot ${slot}`);
+    } else {
+      toast('Failed to apply test texture');
+    }
+  }
+
+  testBtn.addEventListener('click', () => {
+    const inst = getAircraftInstance();
+    if (!inst) { toast('Load an aircraft first'); return; }
+    openModal();
+  });
 
   const CSS = `
   .gfl-panel{position:fixed;top:70px;left:24px;width:320px;max-height:min(74vh,660px);display:flex;flex-direction:column;border-radius:18px;z-index:2147483000;color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;background:linear-gradient(180deg,rgba(20,26,42,.90) 0%,rgba(11,15,24,.94) 100%);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.09);box-shadow:0 28px 70px -14px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);transition:opacity .24s ease,transform .24s cubic-bezier(.2,.85,.3,1),visibility .24s;transform-origin:top left;--gfl-mx:50%;--gfl-my:0%;overflow:hidden;user-select:none;-webkit-user-select:none}
@@ -281,8 +425,65 @@
   .gfl-hint kbd{display:inline-block;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-width:2px;font-family:inherit;font-size:9.5px;color:#8fa0b8}
   .gfl-reload{width:20px;height:20px;border:none;border-radius:6px;background:rgba(255,255,255,.05);color:#8b98ad;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s,transform .18s}
   .gfl-reload:hover{background:rgba(88,166,255,.18);color:#58a6ff;transform:rotate(180deg)}
+  .gfl-test-btn{height:20px;padding:0 8px;border:1px solid rgba(88,166,255,.28);border-radius:6px;background:rgba(88,166,255,.10);color:#7fb7ff;font-size:9.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;transition:background .18s,color .18s,border-color .18s}
+  .gfl-test-btn:hover{background:rgba(88,166,255,.20);color:#a5d0ff;border-color:rgba(88,166,255,.45)}
   #gfl-toast{position:fixed;left:50%;bottom:56px;transform:translate(-50%,16px);padding:9px 18px;border-radius:10px;background:rgba(16,22,34,.95);border:1px solid rgba(88,166,255,.32);box-shadow:0 12px 34px -10px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);color:#cfe2ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:12.5px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:2147483001;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s cubic-bezier(.2,.8,.3,1)}
   #gfl-toast.gfl-show{opacity:1;transform:translate(-50%,0)}
+  .gfl-modal{position:fixed;inset:0;z-index:2147483002;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s}
+  .gfl-modal.gfl-hidden{opacity:0;visibility:hidden;pointer-events:none}
+  .gfl-modal:not(.gfl-hidden){opacity:1;visibility:visible}
+  .gfl-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .gfl-modal-box{position:relative;width:460px;max-width:92vw;max-height:80vh;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(20,26,42,.96) 0%,rgba(11,15,24,.98) 100%);border:1px solid rgba(255,255,255,.10);border-radius:16px;box-shadow:0 30px 80px -20px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06);color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;animation:gfl-modal-in .25s cubic-bezier(.2,.85,.3,1);overflow:hidden}
+  @keyframes gfl-modal-in{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+  .gfl-modal-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;font-size:14px;font-weight:600;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0}
+  .gfl-modal-close{width:24px;height:24px;border:none;border-radius:7px;background:rgba(255,255,255,.05);color:#8b98ad;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s}
+  .gfl-modal-close:hover{background:rgba(255,90,90,.18);color:#ff8b8b}
+  .gfl-modal-body{padding:16px;overflow-y:auto;flex:1}
+  .gfl-modal-body::-webkit-scrollbar{width:8px}
+  .gfl-modal-body::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-radius:8px}
+  .gfl-modal-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.17);border-radius:8px}
+  .gfl-modal-body::-webkit-scrollbar-thumb:hover{background:rgba(88,166,255,.55)}
+  .gfl-modal-empty{text-align:center;padding:30px 16px;color:#5d6b80;font-size:12px}
+  .gfl-modal-empty code{color:#8fa5c2;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px}
+
+  /* Slot rows — one per texture slot */
+  .gfl-slot-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .gfl-slot-row:last-child{margin-bottom:0}
+  .gfl-slot-btn{
+    flex-shrink:0;
+    width:150px;
+    height:40px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(180deg,#ff9a3c 0%,#e07820 100%);
+    color:#fff;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.5px;
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .18s ease, filter .18s ease;
+    box-shadow:0 6px 14px -6px rgba(224,120,32,.55), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  .gfl-slot-btn:hover{
+    filter:brightness(1.08);
+    transform:translateY(-1px);
+    box-shadow:0 10px 20px -8px rgba(224,120,32,.7), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .gfl-slot-btn:active{
+    transform:translateY(0);
+    filter:brightness(.95);
+  }
+  .gfl-slot-name{
+    flex:1;
+    font-size:13px;
+    color:#cfdaea;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .gfl-modal-footer{display:flex;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+  .gfl-modal-cancel{height:32px;padding:0 14px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cfdaea;font-size:12px;cursor:pointer;transition:background .18s,color .18s}
+  .gfl-modal-cancel:hover{background:rgba(255,255,255,.10);color:#e6edf8}
   `;
 
   const styleEl = document.createElement('style');
@@ -446,7 +647,6 @@
     return el;
   }
 
-  /* ---------- 换涂装：支持 texture 为字符串或数组 ---------- */
   function applyLivery(livery, cardEl) {
     const inst = getAircraftInstance();
     if (!inst) return;
@@ -454,68 +654,88 @@
     const acId = getCurrentAircraftId();
     if (livery._aircraftId && acId && String(livery._aircraftId) !== acId) return;
 
-    const texRaw = livery.texture || livery.textureUrl;
-    if (!texRaw) return;
-
-    const texUrls = (Array.isArray(texRaw) ? texRaw : [texRaw])
-      .map(u => resolveUrl(u))
-      .filter(Boolean);
-    if (!texUrls.length) return;
-
-    const indexes = Array.isArray(livery._index) ? livery._index : [livery._index];
-    const parts   = Array.isArray(livery._parts) ? livery._parts : [livery._parts];
-    if (!indexes.length) return;
-
     const def = inst.definition || inst.setup;
     if (!def || !def.parts) return;
+
+    const texRaw   = livery.texture || livery.textureUrl;
+    const idxRaw   = livery._index;
+    const partsRaw = livery._parts;
+    if (!texRaw) return;
+
+    const items = [];
+
+    if (Array.isArray(texRaw)) {
+      const indexes = Array.isArray(idxRaw) ? idxRaw : [idxRaw];
+      const parts   = Array.isArray(partsRaw) ? partsRaw : [partsRaw];
+
+      for (let i = 0; i < texRaw.length; i++) {
+        const t = texRaw[i];
+        if (t && typeof t === 'object' && t.url) {
+          items.push({
+            url  : resolveUrl(t.url),
+            index: t.index != null ? t.index : indexes[i],
+            part : t.part  != null ? t.part  : (parts[i] != null ? parts[i] : 0)
+          });
+        } else if (typeof t === 'string') {
+          items.push({
+            url  : resolveUrl(t),
+            index: indexes[i],
+            part : parts[i] != null ? parts[i] : 0
+          });
+        }
+      }
+    } else if (typeof texRaw === 'string') {
+      const idx   = Array.isArray(idxRaw)   ? idxRaw[0]   : idxRaw;
+      const part  = Array.isArray(partsRaw) ? partsRaw[0] : (partsRaw != null ? partsRaw : 0);
+      items.push({ url: resolveUrl(texRaw), index: idx, part });
+    }
+
+    const valid = items.filter(it => it.url && it.index != null);
+    if (!valid.length) return;
 
     const g = W.geofs;
     const version = parseFloat(g && g.version) || 0;
     const api = g && g.api;
 
-    LOG(`Applying "${livery.name}" — GeoFS v${version}, indexes=[${indexes}], parts=[${parts}], textures=${texUrls.length}`);
+    LOG(`Applying "${livery.name}" — ${valid.length} item(s)`);
 
     if (cardEl) cardEl.classList.add('gfl-loading');
 
     let changed = 0;
 
-    for (let i = 0; i < indexes.length; i++) {
-      const partIdx = parts[i] != null ? parts[i] : 0;
-      const texIdx  = indexes[i];
-      if (texIdx == null) continue;
-
-      const texUrl = texUrls[i] || texUrls[0];
+    for (const item of valid) {
+      const partIdx = item.part != null ? item.part : 0;
+      const texIdx  = item.index;
 
       const part = def.parts[partIdx];
-      if (!part) { ERR('Part not found at index', partIdx); continue; }
+      if (!part) { ERR('Part not found', partIdx); continue; }
 
       const model3d = part['3dmodel'];
       if (!model3d || !model3d._model) {
-        ERR('3dmodel not found on part', partIdx);
+        ERR('3dmodel not found', partIdx);
         continue;
       }
 
       try {
         if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
-          api.Model.prototype.changeTexture(texUrl, texIdx, model3d);
+          api.Model.prototype.changeTexture(item.url, texIdx, model3d);
         } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, texUrl, texIdx);
+          api.changeModelTexture(model3d._model, item.url, texIdx);
         } else if (typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, texUrl, { index: texIdx });
+          api.changeModelTexture(model3d._model, item.url, { index: texIdx });
         } else if (model3d._model.changeTexture) {
-          model3d._model.changeTexture(texUrl, { index: texIdx });
+          model3d._model.changeTexture(item.url, { index: texIdx });
         } else {
           throw new Error('No texture-change API available');
         }
         changed++;
       } catch (err) {
-        ERR('changeModelTexture failed for part ' + partIdx + ' index ' + texIdx, err);
+        ERR('Failed slot ' + texIdx, err);
       }
     }
 
     if (cardEl) cardEl.classList.remove('gfl-loading');
-
-    LOG(`Applied ${changed}/${indexes.length} slot(s)`);
+    LOG(`Applied ${changed}/${valid.length} slot(s)`);
   }
 
   W.GeoFSLiverySwitcher = {
@@ -527,12 +747,10 @@
       console.log('--- GeoFS Livery Switcher debug ---');
       console.log('geofs.version:', g && g.version);
       console.log('instance:', inst);
-      console.log('instance.id:', inst && inst.id);
       console.log('instance.aircraftRecord.id:', inst && inst.aircraftRecord && inst.aircraftRecord.id);
-      console.log('instance.definition.id:', inst && inst.definition && inst.definition.id);
-      console.log('instance.setup.id:', inst && inst.setup && inst.setup.id);
-      console.log('instance.fullPath:', inst && inst.fullPath);
+      console.log('instance.definition.labels:', inst && inst.definition && inst.definition.labels);
       console.log('resolved id:', getCurrentAircraftId());
+      console.log('slot labels:', getSlotLabels());
       console.log('-----------------------------------');
     }
   };
@@ -564,7 +782,7 @@
   }
 
   (function init() {
-    LOG('Version 1.1');
+    LOG('Version 1.2');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
     requestAnimationFrame(() => {

@@ -2,6 +2,9 @@
   {
     "aircraft": "Boeing 737-400",
     "id": "6131",
+    "labels": {
+      "Texture": [0, 1, 2, 3, 4]
+    },
     "index": [0, 1, 2, 3, 4],
     "parts": [0, 0, 0, 0, 0],
     "liveries": [
@@ -49,7 +52,10 @@
   {
     "aircraft": "Airbus A330-300",
     "id": "6012",
-    "index": [0, 1, 2, 3, 5],
+    "labels": {
+      "Texture": [0, 1, 2, 3, 4],
+    },
+    "index": [0, 1, 2, 3, 4],
     "parts": [0, 0, 0, 0, 0],
     "liveries": [
       {
@@ -83,6 +89,9 @@
   {
     "aircraft": "ATR 42-600",
     "id": "2426",
+    "labels": {
+      "Texture": [0, 1, 2, 3]
+    },
     "index": [0, 1, 2, 3],
     "parts": [0, 0, 0, 0],
     "liveries": [
@@ -103,6 +112,9 @@
   {
     "aircraft": "ATR 72-600",
     "id": "2420",
+    "labels": {
+      "Texture": [0, 1, 2, 3]
+    },
     "index": [0, 1, 2, 3],
     "parts": [0, 0, 0, 0],
     "liveries": [
@@ -123,6 +135,9 @@
   {
     "aircraft": "Boeing 737-800 (wingletless)",
     "id": "3054",
+    "labels": {
+      "Texture": [0]
+    },
     "index": [0],
     "parts": [0],
     "liveries": [
@@ -140,6 +155,9 @@
   {
     "aircraft": "Airbus A340-600",
     "id": "5998",
+    "labels": {
+      "Texture": [0]
+    },
     "index": [0],
     "parts": [0],
     "liveries": [
@@ -157,6 +175,10 @@
   {
     "aircraft": "Boeing 777-200ER",
     "id": "240",
+    "labels": {
+      "Texture": [1],
+      "Metallic Roughness shader": [0]
+    },
     "index": [1, 0],
     "parts": [0, 0],
     "liveries": [
