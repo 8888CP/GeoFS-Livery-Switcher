@@ -21,7 +21,6 @@ jobs:
           node << 'EOF'
           const fs = require('fs');
 
-          // Read livery.json
           const data = JSON.parse(fs.readFileSync('./livery.json', 'utf8'));
 
           let totalLiveries = 0;
@@ -41,7 +40,7 @@ jobs:
           const content = [
             '🛫 **GeoFS Livery Switcher — Database Updated**',
             '',
-            `**by**: ${by}`,
+            `**Author**: ${author}`,
             `**Commit**: ${commitMsg}`,
             `**Total liveries**: ${totalLiveries}`,
             `**Aircraft covered**: ${aircraftList.join(' | ')}`,
