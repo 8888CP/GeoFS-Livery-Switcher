@@ -3,7 +3,7 @@
 // @namespace    https://www.geo-fs.com/
 // @version      1.1
 // @description  Aircraft-aware livery browser for GeoFS. Press Shift to toggle.
-// @author       You
+// @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
 // @match        https://geo-fs.com/geofs.php*
 // @icon         https://www.geo-fs.com/favicon.ico
