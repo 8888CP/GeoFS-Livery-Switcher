@@ -162,5 +162,40 @@
         ]
       }
     ]
+  },
+  {
+    "aircraft": "Airbus A340-600",
+    "id": "5998",
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "Virgin Atlantic (A big Virgin Atlantic thank you livery)",
+        "author": "A 5APU",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a346/a340-600 abig.png"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Boeing 777-200ER",
+    "id": "240",
+    "index": [1, 0],
+    "parts": [0, 0],
+    "liveries": [
+      {
+        "name": "Asiana Airlines (old design)",
+        "author": "A 5APU",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "texture": [
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/boeing_b777-200er/shaders/original.webp",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b772ER/772 asiana old.png"
+        ]
+      }
+    ]
   }
 ]
