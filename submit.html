@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoFS Livery Submission</title>
+<style>
+  :root{
+    --bg:#0b0f18; --panel:rgba(20,26,42,.90);
+    --border:rgba(255,255,255,.09); --text:#e6edf8;
+    --text-2:#7c8ba1; --text-3:#5d6b80;
+    --accent:#58a6ff; --accent-2:#a78bfa;
+    --warm-1:#ff9a3c; --warm-2:#e07820;
+    --ok:#57d994; --err:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;min-height:100%;
+    background:
+      radial-gradient(900px circle at 10% -10%,rgba(88,166,255,.10),transparent 60%),
+      radial-gradient(800px circle at 90% 110%,rgba(167,139,250,.08),transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+  .page{max-width:760px;margin:0 auto;padding:40px 20px 80px}
+
+  .site-header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .logo{width:12px;height:12px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 0 12px rgba(88,166,255,.85),0 0 26px rgba(88,166,255,.35)}
+  h1{font-size:22px;font-weight:600;letter-spacing:-.2px;margin:0;color:#eaf2ff}
+  .subtitle{color:var(--text-2);font-size:13px;margin:0 0 30px}
+  .subtitle a{color:var(--accent);text-decoration:none}
+  .subtitle a:hover{text-decoration:underline}
+
+  .card{position:relative;background:var(--panel);
+    backdrop-filter:blur(22px) saturate(160%);
+    -webkit-backdrop-filter:blur(22px) saturate(160%);
+    border:1px solid var(--border);border-radius:16px;padding:22px;
+    box-shadow:0 28px 70px -20px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    margin-bottom:20px}
+
+  .field{margin-bottom:16px}
+  .field:last-of-type{margin-bottom:0}
+  label{display:block;font-size:11px;font-weight:600;letter-spacing:.6px;
+    text-transform:uppercase;color:var(--text-2);margin-bottom:7px}
+  label .req{color:var(--err);margin-left:3px}
+  label .hint{color:var(--text-3);text-transform:none;letter-spacing:0;font-weight:400;margin-left:6px}
+
+  input[type="text"],select,textarea{
+    width:100%;padding:10px 12px;border-radius:10px;
+    background:rgba(255,255,255,.045);
+    border:1px solid rgba(255,255,255,.075);
+    color:var(--text);font:inherit;font-size:13px;outline:none;
+    transition:border-color .18s,background .18s,box-shadow .18s}
+  input::placeholder,textarea::placeholder{color:#4d5a70}
+  input:focus,select:focus,textarea:focus{
+    border-color:rgba(88,166,255,.55);background:rgba(88,166,255,.06);
+    box-shadow:0 0 0 3px rgba(88,166,255,.10)}
+  select{appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237c8ba1' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  select option{background:#1a2234;color:var(--text)}
+  textarea{resize:vertical;min-height:68px;font-family:inherit}
+
+  .row{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
+
+  /* ===== Uploader ===== */
+  .uploader{
+    display:flex;align-items:center;gap:14px;
+    padding:12px;border-radius:12px;
+    border:1px dashed rgba(255,255,255,.10);
+    transition:background .18s,border-color .18s;
+  }
+  .uploader.dragover{
+    background:rgba(88,166,255,.10);
+    border-color:rgba(88,166,255,.55);
+  }
+
+  .load-btn{
+    flex-shrink:0;
+    width:170px;height:44px;
+    border:none;border-radius:9px;
+    background:linear-gradient(180deg,var(--warm-1) 0%,var(--warm-2) 100%);
+    color:#fff;font:inherit;font-size:12.5px;font-weight:700;
+    letter-spacing:.6px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .12s ease,box-shadow .18s ease,filter .18s ease;
+    box-shadow:0 6px 14px -6px rgba(224,120,32,.55),
+      inset 0 1px 0 rgba(255,255,255,.25);
+    position:relative;overflow:hidden;
+  }
+  .load-btn:hover:not(:disabled){
+    filter:brightness(1.08);transform:translateY(-1px);
+    box-shadow:0 10px 20px -8px rgba(224,120,32,.7),
+      inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .load-btn:active:not(:disabled){transform:translateY(0);filter:brightness(.95)}
+  .load-btn:disabled{cursor:progress;opacity:.85}
+  .load-btn.uploading::after{
+    content:'';position:absolute;left:0;top:0;height:100%;width:40%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+    animation:shimmer 1.1s linear infinite;
+  }
+  @keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(300%)}}
+
+  .thumb{
+    flex-shrink:0;width:64px;height:44px;border-radius:8px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.07);
+    display:none;align-items:center;justify-content:center;overflow:hidden;
+    position:relative;
+  }
+  .thumb.visible{display:flex}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb .check{
+    position:absolute;right:3px;top:3px;
+    width:14px;height:14px;border-radius:50%;
+    background:var(--ok);color:#0b0f18;
+    font-size:9px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 6px rgba(87,217,148,.7);
+  }
+
+  .upload-info{flex:1;min-width:0}
+  .upload-title{font-size:13.5px;color:#cfdaea;font-weight:500}
+  .upload-sub{font-size:11px;color:var(--text-3);margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .upload-sub.ok{color:var(--ok)}
+  .upload-sub.err{color:var(--err)}
+
+  /* ===== Buttons ===== */
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .btn{display:inline-flex;align-items:center;gap:8px;
+    padding:11px 18px;border-radius:10px;border:none;
+    font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+    transition:transform .12s ease,box-shadow .18s ease,filter .18s ease,
+      background .18s,color .18s;text-decoration:none}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{
+    background:linear-gradient(180deg,var(--warm-1) 0%,var(--warm-2) 100%);
+    color:#fff;
+    box-shadow:0 6px 14px -6px rgba(224,120,32,.55),
+      inset 0 1px 0 rgba(255,255,255,.25)}
+  .btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);
+    box-shadow:0 10px 20px -8px rgba(224,120,32,.7),
+      inset 0 1px 0 rgba(255,255,255,.3)}
+  .btn-secondary{background:rgba(88,166,255,.14);color:#a5d0ff;
+    border:1px solid rgba(88,166,255,.35)}
+  .btn-secondary:hover{background:rgba(88,166,255,.22);
+    border-color:rgba(88,166,255,.55);color:#cfe2ff}
+  .btn-ghost{background:rgba(255,255,255,.05);color:#cfdaea;
+    border:1px solid rgba(255,255,255,.10)}
+  .btn-ghost:hover{background:rgba(255,255,255,.10);color:var(--text)}
+
+  /* ===== Preview ===== */
+  .preview{margin-top:18px;padding:14px 16px;
+    background:#06090f;border:1px solid rgba(255,255,255,.07);border-radius:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;line-height:1.55;color:#cfdaea;white-space:pre-wrap;
+    word-break:break-all;max-height:340px;overflow:auto;display:none}
+  .preview.visible{display:block}
+  .preview::-webkit-scrollbar{width:8px}
+  .preview::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:8px}
+  .preview .key{color:#7fb7ff}
+  .preview .str{color:#a5e0a0}
+  .preview .punct{color:#6b7a90}
+
+  /* ===== Toast ===== */
+  .toast{position:fixed;left:50%;bottom:40px;transform:translate(-50%,16px);
+    padding:10px 20px;border-radius:10px;
+    background:rgba(16,22,34,.96);
+    border:1px solid rgba(88,166,255,.32);
+    box-shadow:0 12px 34px -10px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);
+    color:#cfe2ff;font-size:13px;z-index:10;opacity:0;pointer-events:none;
+    transition:opacity .25s ease,transform .25s ease}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast.ok{border-color:rgba(87,217,148,.45);color:#b8f5d4}
+  .toast.err{border-color:rgba(255,107,107,.45);color:#ffc7c7}
+
+  .footer{text-align:center;color:var(--text-3);font-size:12px;margin-top:40px}
+  .footer a{color:var(--accent);text-decoration:none}
+  .footer a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="site-header">
+    <span class="logo"></span>
+    <h1>Submit a Livery</h1>
+  </div>
+  <p class="subtitle">
+    Upload one texture — the form applies it to every slot of the selected aircraft.
+    <a id="repo-link" href="#" target="_blank" rel="noopener">View repository</a>
+  </p>
+
+  <div class="card">
+
+    <div class="row">
+      <div class="field">
+        <label>Aircraft <span class="req">*</span></label>
+        <select id="aircraft"><option value="">Loading…</option></select>
+      </div>
+      <div class="field">
+        <label>Type <span class="req">*</span></label>
+        <select id="type">
+          <option value="pax">Passenger (pax)</option>
+          <option value="cargo">Cargo (cargo)</option>
+          <option value="real">Real (real)</option>
+          <option value="virtual">Virtual (virtual)</option>
+          <option value="military">Military (military)</option>
+          <option value="special">Special (special)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Livery Name <span class="req">*</span></label>
+        <input id="name" type="text" placeholder="e.g. Hainan Airlines">
+      </div>
+      <div class="field">
+        <label>Author <span class="req">*</span></label>
+        <input id="author" type="text" placeholder="Your name / handle">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tags <span class="hint">comma-separated</span></label>
+      <input id="tags" type="text" placeholder="real, special">
+    </div>
+
+    <div class="field">
+      <label>Texture <span class="hint" id="slot-hint">Select an aircraft first</span></label>
+      <div class="uploader" id="uploader">
+        <button type="button" class="load-btn" id="load-btn">LOAD IMAGE</button>
+        <div class="thumb" id="thumb"></div>
+        <div class="upload-info">
+          <div class="upload-title">Drop image here or click LOAD IMAGE</div>
+          <div class="upload-sub" id="upload-sub">No file selected</div>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept="image/*" style="display:none">
+    </div>
+
+    <div class="field">
+      <label>Notes <span class="hint">optional</span></label>
+      <textarea id="notes" placeholder="Anything reviewers should know — reference image, permission proof, etc."></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-secondary" id="btn-preview">Generate JSON</button>
+      <button type="button" class="btn btn-primary" id="btn-submit">Submit via GitHub</button>
+      <button type="button" class="btn btn-ghost" id="btn-copy" style="display:none">Copy JSON</button>
+    </div>
+
+    <pre class="preview" id="preview"></pre>
+
+  </div>
+
+  <p class="footer">
+    GeoFS Livery Switcher · <a href="https://github.com/8888CP/GeoFS-Livery-Switcher" target="_blank" rel="noopener">Source</a>
+  </p>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+   *  Config
+   * ============================================================ */
+  const REPO = '8888CP/GeoFS-Livery-Switcher';
+  const LIVERY_JSON_URL = `https://raw.githubusercontent.com/${REPO}/refs/heads/main/livery.json`;
+  const ISSUE_LABEL = 'livery-submission';
+
+  /* ============================================================
+   *  DOM
+   * ============================================================ */
+  const $ = s => document.querySelector(s);
+  const aircraftSel = $('#aircraft');
+  const typeSel     = $('#type');
+  const nameEl      = $('#name');
+  const authorEl    = $('#author');
+  const tagsEl      = $('#tags');
+  const notesEl     = $('#notes');
+  const uploader    = $('#uploader');
+  const loadBtn     = $('#load-btn');
+  const thumbEl     = $('#thumb');
+  const uploadSub   = $('#upload-sub');
+  const slotHint    = $('#slot-hint');
+  const fileInput   = $('#file-input');
+  const previewEl   = $('#preview');
+  const toastEl     = $('#toast');
+
+  $('#repo-link').href = `https://github.com/${REPO}`;
+
+  /* ============================================================
+   *  State
+   * ============================================================ */
+  let aircraftData = [];
+  let currentAircraft = null;
+  let previewJSON = null;
+
+  const upload = {
+    file: null,
+    url: null,
+    uploading: false,
+    error: null
+  };
+
+  /* ============================================================
+   *  Toast
+   * ============================================================ */
+  let toastTimer = null;
+  function toast(msg, kind) {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast show' + (kind ? ' ' + kind : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+  }
+
+  /* ============================================================
+   *  Load livery.json → aircraft dropdown
+   * ============================================================ */
+  async function loadAircraft() {
+    try {
+      const url = LIVERY_JSON_URL + (LIVERY_JSON_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      aircraftData = Array.isArray(data) ? data : [];
+      if (!aircraftData.length) throw new Error('livery.json is empty');
+
+      aircraftSel.innerHTML = '<option value="">— Select aircraft —</option>' +
+        aircraftData.map((ac, i) =>
+          `<option value="${i}">${esc(ac.aircraft)} (${ac.id})</option>`
+        ).join('');
+    } catch (err) {
+      console.error('[Submit] load livery.json failed:', err);
+      aircraftSel.innerHTML = '<option value="">⚠ Could not load livery.json</option>';
+      toast('Failed to load livery.json', 'err');
+    }
+  }
+
+  /* ============================================================
+   *  Slot hint
+   * ============================================================ */
+  function updateSlotHint() {
+    if (!currentAircraft) {
+      slotHint.textContent = 'Select an aircraft first';
+      return;
+    }
+    const n = Array.isArray(currentAircraft.index) ? currentAircraft.index.length : 1;
+    slotHint.textContent = `applies to ${n} slot${n === 1 ? '' : 's'}`;
+  }
+
+  /* ============================================================
+   *  File picking & uploading
+   * ============================================================ */
+  loadBtn.addEventListener('click', () => {
+    if (upload.uploading) return;
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    const f = fileInput.files && fileInput.files[0];
+    if (f) handleFile(f);
+    fileInput.value = '';
+  });
+
+  uploader.addEventListener('dragover', e => {
+    e.preventDefault(); e.stopPropagation();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+    uploader.classList.add('dragover');
+  });
+  uploader.addEventListener('dragleave', e => {
+    e.preventDefault(); e.stopPropagation();
+    uploader.classList.remove('dragover');
+  });
+  uploader.addEventListener('drop', e => {
+    e.preventDefault(); e.stopPropagation();
+    uploader.classList.remove('dragover');
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+
+  async function handleFile(file) {
+    if (!file.type || !file.type.startsWith('image/')) {
+      toast('Only image files are supported', 'err');
+      return;
+    }
+
+    upload.file = file;
+    upload.url  = null;
+    upload.error = null;
+    upload.uploading = true;
+    updateUploadUI('uploading');
+
+    const endpoints = [
+      { name: 'uguu.se',    fn: uploadUguu },
+      { name: 'catbox.moe', fn: uploadCatbox },
+      { name: 'tmpfiles',   fn: uploadTmpfiles }
+    ];
+
+    let lastErr = null;
+
+    for (const ep of endpoints) {
+      try {
+        console.log('[Submit] trying upload via', ep.name);
+        const url = await ep.fn(file);
+        upload.url = url;
+        upload.uploading = false;
+        updateUploadUI('ok');
+        toast('Uploaded via ' + ep.name, 'ok');
+        return;
+      } catch (err) {
+        console.warn('[Submit]', ep.name, 'failed:', err);
+        lastErr = err;
+      }
+    }
+
+    upload.uploading = false;
+    upload.error = lastErr ? (lastErr.message || String(lastErr)) : 'All upload endpoints failed';
+    updateUploadUI('err');
+    toast('Upload failed: ' + upload.error, 'err');
+  }
+
+  /* ----- 图床 1: uguu.se ----- */
+  async function uploadUguu(file) {
+    const fd = new FormData();
+    fd.append('files[]', file);
+    const res = await fetch('https://uguu.se/upload?output=text', {
+      method: 'POST',
+      body: fd
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = (await res.text()).trim();
+    if (!/^https?:\/\//i.test(text)) throw new Error(text.slice(0, 80) || 'Bad response');
+    return text;
+  }
+
+  /* ----- 图床 2: catbox.moe ----- */
+  async function uploadCatbox(file) {
+    const fd = new FormData();
+    fd.append('reqtype', 'fileupload');
+    fd.append('fileToUpload', file);
+    const res = await fetch('https://catbox.moe/user/api.php', {
+      method: 'POST',
+      body: fd
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = (await res.text()).trim();
+    if (!text.startsWith('https://')) throw new Error(text.slice(0, 80) || 'Bad response');
+    return text;
+  }
+
+  /* ----- 图床 3: tmpfiles.org ----- */
+  async function uploadTmpfiles(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await fetch('https://tmpfiles.org/api/v1/upload', {
+      method: 'POST',
+      body: fd
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (!json.data || !json.data.url) throw new Error('No URL in response');
+    return json.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+  }
+
+  /* ============================================================
+   *  Upload UI
+   * ============================================================ */
+  function updateUploadUI(state) {
+    loadBtn.classList.toggle('uploading', state === 'uploading');
+    loadBtn.disabled = state === 'uploading';
+    if (state === 'uploading')       loadBtn.textContent = 'UPLOADING…';
+    else if (state === 'ok')         loadBtn.textContent = 'REPLACE';
+    else if (state === 'err')        loadBtn.textContent = 'RETRY';
+    else                             loadBtn.textContent = 'LOAD IMAGE';
+
+    thumbEl.innerHTML = '';
+    if (upload.url) {
+      thumbEl.classList.add('visible');
+      const img = document.createElement('img');
+      img.src = upload.url;
+      img.loading = 'lazy';
+      img.addEventListener('error', () => {
+        // 图片 CDN 回显失败 → 显示本地文件缩略图
+        if (upload.file) {
+          img.src = URL.createObjectURL(upload.file);
+        }
+      });
+      thumbEl.appendChild(img);
+
+      const check = document.createElement('span');
+      check.className = 'check';
+      check.textContent = '✓';
+      thumbEl.appendChild(check);
+    } else if (upload.file) {
+      thumbEl.classList.add('visible');
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(upload.file);
+      img.addEventListener('load', () => URL.revokeObjectURL(img.src));
+      thumbEl.appendChild(img);
+    } else {
+      thumbEl.classList.remove('visible');
+    }
+
+    if (state === 'uploading') {
+      uploadSub.className = 'upload-sub';
+      uploadSub.textContent = 'Uploading ' + (upload.file ? upload.file.name : '');
+    } else if (state === 'ok' && upload.url) {
+      uploadSub.className = 'upload-sub ok';
+      uploadSub.textContent = '✓ ' + upload.url;
+      uploadSub.title = upload.url;
+    } else if (state === 'err' && upload.error) {
+      uploadSub.className = 'upload-sub err';
+      uploadSub.textContent = '✗ ' + upload.error;
+    } else {
+      uploadSub.className = 'upload-sub';
+      uploadSub.textContent = 'No file selected';
+    }
+  }
+
+  /* ============================================================
+   *  Gather form data
+   * ============================================================ */
+  function gather() {
+    if (!currentAircraft) throw new Error('Select an aircraft first');
+    const name = nameEl.value.trim();
+    const author = authorEl.value.trim();
+    if (!name) throw new Error('Livery name is required');
+    if (!author) throw new Error('Author is required');
+    if (upload.uploading) throw new Error('Wait for the upload to finish');
+    if (!upload.url) throw new Error('Upload an image first');
+
+    const indexes = Array.isArray(currentAircraft.index)
+      ? currentAircraft.index
+      : [currentAircraft.index];
+
+    const texture = indexes.map(() => upload.url);
+
+    const tags = tagsEl.value
+      .split(',')
+      .map(t => t.trim().toLowerCase())
+      .filter(Boolean);
+
+    const livery = {
+      name,
+      author,
+      type: typeSel.value,
+      tags: tags.length ? tags : [typeSel.value],
+      texture
+    };
+
+    return { aircraft: currentAircraft, indexes, livery };
+  }
+
+  /* ============================================================
+   *  Preview
+   * ============================================================ */
+  function doPreview() {
+    try {
+      const { aircraft, livery } = gather();
+      previewJSON = { aircraft: aircraft.aircraft, id: aircraft.id, livery };
+      previewEl.innerHTML = highlight(JSON.stringify(previewJSON, null, 2));
+      previewEl.classList.add('visible');
+      $('#btn-copy').style.display = 'inline-flex';
+      toast('JSON generated', 'ok');
+    } catch (err) {
+      previewEl.classList.remove('visible');
+      $('#btn-copy').style.display = 'none';
+      toast(err.message, 'err');
+    }
+  }
+
+  /* ============================================================
+   *  Copy
+   * ============================================================ */
+  async function doCopy() {
+    if (!previewJSON) { toast('Generate JSON first', 'err'); return; }
+    const text = JSON.stringify(previewJSON, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Copied to clipboard', 'ok');
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); toast('Copied to clipboard', 'ok'); }
+      catch { toast('Copy failed — select manually', 'err'); }
+      document.body.removeChild(ta);
+    }
+  }
+
+  /* ============================================================
+   *  Submit via GitHub issue
+   * ============================================================ */
+  function doSubmit() {
+    let payload;
+    try { payload = gather(); }
+    catch (err) { toast(err.message, 'err'); return; }
+
+    const { aircraft, indexes, livery } = payload;
+    const jsonBlock = JSON.stringify(
+      { aircraft: aircraft.aircraft, id: aircraft.id, livery },
+      null, 2
+    );
+    const notes = notesEl.value.trim();
+
+    const title = `[Livery] ${livery.name} — ${aircraft.aircraft}`;
+
+    const body =
+      `### New livery submission\n\n` +
+      `**Aircraft**: ${aircraft.aircraft} (\`${aircraft.id}\`)\n` +
+      `**Livery name**: ${livery.name}\n` +
+      `**Author**: ${livery.author}\n` +
+      `**Type**: \`${livery.type}\`\n` +
+      `**Tags**: \`${(livery.tags || []).join('`, `')}\`\n\n` +
+      `### Texture\n\n` +
+      `${upload.url}\n\n` +
+      `_Applied to slots: ${indexes.join(', ')}_\n\n` +
+      (notes ? `### Notes\n\n${notes}\n\n` : '') +
+      `### JSON entry\n\n` +
+      '```json\n' + jsonBlock + '\n```\n';
+
+    const url =
+      `https://github.com/${REPO}/issues/new` +
+      `?title=${encodeURIComponent(title)}` +
+      `&body=${encodeURIComponent(body)}` +
+      `&labels=${encodeURIComponent(ISSUE_LABEL)}`;
+
+    if (url.length > 7500) {
+      doCopy();
+      toast('URL too long — JSON copied, paste into the issue', 'err');
+      window.open(`https://github.com/${REPO}/issues/new?labels=${encodeURIComponent(ISSUE_LABEL)}`, '_blank', 'noopener');
+      return;
+    }
+
+    window.open(url, '_blank', 'noopener');
+    toast('Opening GitHub…', 'ok');
+  }
+
+  /* ============================================================
+   *  Helpers
+   * ============================================================ */
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g,
+      c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function highlight(json) {
+    return esc(json)
+      .replace(/&quot;([^&]*?)&quot;(\s*:)/g, '<span class="key">&quot;$1&quot;</span><span class="punct">$2</span>')
+      .replace(/(:\s*)&quot;([^&]*?)&quot;/g, '$1<span class="str">&quot;$2&quot;</span>');
+  }
+
+  /* ============================================================
+   *  Events
+   * ============================================================ */
+  aircraftSel.addEventListener('change', () => {
+    const i = Number(aircraftSel.value);
+    if (Number.isNaN(i) || !aircraftData[i]) {
+      currentAircraft = null;
+    } else {
+      currentAircraft = aircraftData[i];
+    }
+    updateSlotHint();
+  });
+
+  $('#btn-preview').addEventListener('click', doPreview);
+  $('#btn-copy').addEventListener('click', doCopy);
+  $('#btn-submit').addEventListener('click', doSubmit);
+
+  /* ============================================================
+   *  Init
+   * ============================================================ */
+  loadAircraft();
+  updateUploadUI('idle');
+  updateSlotHint();
+
+})();
+</script>
+
+</body>
+</html>
