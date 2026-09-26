@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.2
+// @version      1.3
 // @description  Aircraft-aware livery browser for GeoFS. Press Shift to toggle.
-// @author       You
+// @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
 // @match        https://geo-fs.com/geofs.php*
 // @icon         https://www.geo-fs.com/favicon.ico
@@ -142,30 +142,31 @@
     }));
   }
 
-  /* ---------- 获取当前飞机的槽位定义（labels） ---------- */
+  /* ---------- 获取当前飞机的槽位定义 ---------- */
   function getSlotLabels() {
     const inst = getAircraftInstance();
     if (!inst) return null;
 
-    const def = inst.definition || inst.setup;
-    if (!def) return null;
+    const group = findCurrentGroup(state.groups);
+    let labels = group && group.labels;
 
-    // labels 优先，不同版本可能在 definition.labels 或 setup.labels
-    const labels = def.labels || (inst.definition && inst.definition.labels);
-    if (!labels) return null;
+    if (!labels) {
+      const def = inst.definition || inst.setup;
+      labels = def && def.labels;
+    }
 
-    // 把 { "Texture": [0], "Wing texture": [1] } 展平成 [{ name, slot }]
+    if (!labels || typeof labels !== 'object') return null;
+
     const out = [];
     Object.keys(labels).forEach(name => {
-      const slots = Array.isArray(labels[name]) ? labels[name] : [labels[name]];
-      slots.forEach(slot => {
-        if (slot != null && !isNaN(Number(slot))) {
-          out.push({ name, slot: Number(slot) });
-        }
-      });
+      const raw = labels[name];
+      const slots = (Array.isArray(raw) ? raw : [raw])
+        .map(s => Number(s))
+        .filter(s => !isNaN(s));
+      if (slots.length) out.push({ name, slots });
     });
 
-    out.sort((a, b) => a.slot - b.slot);
+    out.sort((a, b) => a.slots[0] - b.slots[0]);
     return out;
   }
 
@@ -256,7 +257,6 @@
   modalCancel.addEventListener('click', closeModal);
   modalBackdrop.addEventListener('click', closeModal);
 
-  /* ---------- 生成 modal 内容：每个槽位一行 ---------- */
   function renderModalBody() {
     const labels = getSlotLabels();
 
@@ -268,24 +268,59 @@
       return;
     }
 
-    modalBody.innerHTML = labels.map(item => `
-      <div class="gfl-slot-row" data-slot="${item.slot}">
-        <button class="gfl-slot-btn" data-slot="${item.slot}">LOAD IMAGE</button>
+    modalBody.innerHTML = labels.map((item, i) => `
+      <div class="gfl-slot-row" data-row="${i}">
+        <button class="gfl-slot-btn" data-row="${i}">LOAD IMAGE</button>
         <span class="gfl-slot-name">${esc(item.name)}</span>
       </div>
     `).join('');
 
-    // 绑定按钮
-    modalBody.querySelectorAll('.gfl-slot-btn').forEach(btn => {
+    // 绑定每行的点击 & 拖拽
+    modalBody.querySelectorAll('.gfl-slot-row').forEach(rowEl => {
+      const rowIdx = Number(rowEl.dataset.row);
+      const row = labels[rowIdx];
+      if (!row) return;
+
+      // 点击按钮 → 打开文件选择器
+      const btn = rowEl.querySelector('.gfl-slot-btn');
       btn.addEventListener('click', () => {
-        const slot = Number(btn.dataset.slot);
-        pickAndApply(slot);
+        pickAndApply(row.slots);
+      });
+
+      // 整行支持拖入
+      rowEl.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+        rowEl.classList.add('gfl-row-dragover');
+      });
+      rowEl.addEventListener('dragleave', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        rowEl.classList.remove('gfl-row-dragover');
+      });
+      rowEl.addEventListener('drop', e => {
+        e.preventDefault();
+        e.stopPropagation();
+        rowEl.classList.remove('gfl-row-dragover');
+
+        const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (!f) return;
+        if (!f.type || !f.type.startsWith('image/')) {
+          toast('Only image files are supported');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          applyTestTexture(reader.result, row.slots);
+        };
+        reader.onerror = () => toast('Failed to read file');
+        reader.readAsDataURL(f);
       });
     });
   }
 
-  /* ---------- 选择文件并应用到指定槽位 ---------- */
-  function pickAndApply(slot) {
+  function pickAndApply(slots) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -298,7 +333,7 @@
       }
       const reader = new FileReader();
       reader.onload = () => {
-        applyTestTexture(reader.result, slot);
+        applyTestTexture(reader.result, slots);
       };
       reader.onerror = () => toast('Failed to read file');
       reader.readAsDataURL(f);
@@ -306,50 +341,45 @@
     input.click();
   }
 
-  /* ---------- 应用到指定槽位 ---------- */
-  function applyTestTexture(dataUrl, slot) {
+  function applyTestTexture(dataUrl, slots) {
     const inst = getAircraftInstance();
-    if (!inst) { toast('No aircraft loaded'); return; }
+    if (!inst) return;
 
     const def = inst.definition || inst.setup;
-    if (!def || !def.parts) { toast('Aircraft definition not found'); return; }
+    if (!def || !def.parts) return;
 
     const g = W.geofs;
     const version = parseFloat(g && g.version) || 0;
     const api = g && g.api;
 
-    // 遍历部件，找到第一个含该槽位的模型
     let applied = 0;
 
-    for (let p = 0; p < def.parts.length; p++) {
-      const part = def.parts[p];
-      if (!part) continue;
-      const model3d = part['3dmodel'];
-      if (!model3d || !model3d._model) continue;
+    for (const slot of slots) {
+      for (let p = 0; p < def.parts.length; p++) {
+        const part = def.parts[p];
+        if (!part) continue;
+        const model3d = part['3dmodel'];
+        if (!model3d || !model3d._model) continue;
 
-      try {
-        if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
-          api.Model.prototype.changeTexture(dataUrl, slot, model3d);
-        } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, dataUrl, slot);
-        } else if (typeof api.changeModelTexture === 'function') {
-          api.changeModelTexture(model3d._model, dataUrl, { index: slot });
-        } else if (model3d._model.changeTexture) {
-          model3d._model.changeTexture(dataUrl, { index: slot });
-        } else {
-          throw new Error('No texture-change API available');
+        try {
+          if (version === 2.9 && api.Model && api.Model.prototype.changeTexture) {
+            api.Model.prototype.changeTexture(dataUrl, slot, model3d);
+          } else if (version >= 3.0 && version <= 3.7 && typeof api.changeModelTexture === 'function') {
+            api.changeModelTexture(model3d._model, dataUrl, slot);
+          } else if (typeof api.changeModelTexture === 'function') {
+            api.changeModelTexture(model3d._model, dataUrl, { index: slot });
+          } else if (model3d._model.changeTexture) {
+            model3d._model.changeTexture(dataUrl, { index: slot });
+          }
+          applied++;
+        } catch (err) {
+          ERR('Test apply failed for slot ' + slot + ' part ' + p, err);
         }
-        applied++;
-      } catch (err) {
-        ERR('Test apply failed for slot ' + slot + ' part ' + p, err);
       }
     }
 
     if (applied > 0) {
-      toast(`Test applied to slot ${slot}`);
-      LOG(`Test texture applied to slot ${slot}`);
-    } else {
-      toast('Failed to apply test texture');
+      LOG(`Test texture applied to slots [${slots}]`);
     }
   }
 
@@ -359,6 +389,7 @@
     openModal();
   });
 
+  /* ---------- CSS ---------- */
   const CSS = `
   .gfl-panel{position:fixed;top:70px;left:24px;width:320px;max-height:min(74vh,660px);display:flex;flex-direction:column;border-radius:18px;z-index:2147483000;color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;background:linear-gradient(180deg,rgba(20,26,42,.90) 0%,rgba(11,15,24,.94) 100%);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.09);box-shadow:0 28px 70px -14px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);transition:opacity .24s ease,transform .24s cubic-bezier(.2,.85,.3,1),visibility .24s;transform-origin:top left;--gfl-mx:50%;--gfl-my:0%;overflow:hidden;user-select:none;-webkit-user-select:none}
   .gfl-panel.gfl-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.93) translateY(-10px)}
@@ -425,8 +456,8 @@
   .gfl-hint kbd{display:inline-block;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-width:2px;font-family:inherit;font-size:9.5px;color:#8fa0b8}
   .gfl-reload{width:20px;height:20px;border:none;border-radius:6px;background:rgba(255,255,255,.05);color:#8b98ad;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s,transform .18s}
   .gfl-reload:hover{background:rgba(88,166,255,.18);color:#58a6ff;transform:rotate(180deg)}
-  .gfl-test-btn{height:20px;padding:0 8px;border:1px solid rgba(88,166,255,.28);border-radius:6px;background:rgba(88,166,255,.10);color:#7fb7ff;font-size:9.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;transition:background .18s,color .18s,border-color .18s}
-  .gfl-test-btn:hover{background:rgba(88,166,255,.20);color:#a5d0ff;border-color:rgba(88,166,255,.45)}
+  .gfl-test-btn{height:20px;padding:0 8px;border:1px solid rgba(255,154,60,.35);border-radius:6px;background:rgba(255,154,60,.12);color:#ffb266;font-size:9.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;transition:background .18s,color .18s,border-color .18s}
+  .gfl-test-btn:hover{background:rgba(255,154,60,.22);color:#ffcb91;border-color:rgba(255,154,60,.55)}
   #gfl-toast{position:fixed;left:50%;bottom:56px;transform:translate(-50%,16px);padding:9px 18px;border-radius:10px;background:rgba(16,22,34,.95);border:1px solid rgba(88,166,255,.32);box-shadow:0 12px 34px -10px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);color:#cfe2ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:12.5px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:2147483001;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s cubic-bezier(.2,.8,.3,1)}
   #gfl-toast.gfl-show{opacity:1;transform:translate(-50%,0)}
   .gfl-modal{position:fixed;inset:0;z-index:2147483002;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s}
@@ -446,41 +477,29 @@
   .gfl-modal-empty{text-align:center;padding:30px 16px;color:#5d6b80;font-size:12px}
   .gfl-modal-empty code{color:#8fa5c2;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px}
 
-  /* Slot rows — one per texture slot */
-  .gfl-slot-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  /* Slot rows */
+  .gfl-slot-row{
+    display:flex;align-items:center;gap:12px;margin-bottom:8px;
+    padding:6px;border-radius:10px;
+    border:2px dashed transparent;
+    transition:border-color .18s ease, background .18s ease;
+  }
   .gfl-slot-row:last-child{margin-bottom:0}
+  .gfl-slot-row.gfl-row-dragover{
+    border-color:rgba(88,166,255,.70);
+    background:rgba(88,166,255,.12);
+  }
   .gfl-slot-btn{
-    flex-shrink:0;
-    width:150px;
-    height:40px;
-    border:none;
-    border-radius:8px;
+    flex-shrink:0;width:150px;height:40px;border:none;border-radius:8px;
     background:linear-gradient(180deg,#ff9a3c 0%,#e07820 100%);
-    color:#fff;
-    font-size:12.5px;
-    font-weight:600;
-    letter-spacing:.5px;
-    cursor:pointer;
-    transition:transform .12s ease, box-shadow .18s ease, filter .18s ease;
-    box-shadow:0 6px 14px -6px rgba(224,120,32,.55), inset 0 1px 0 rgba(255,255,255,.25);
+    color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.5px;
+    cursor:pointer;pointer-events:auto;
+    transition:transform .12s ease,box-shadow .18s ease,filter .18s ease;
+    box-shadow:0 6px 14px -6px rgba(224,120,32,.55),inset 0 1px 0 rgba(255,255,255,.25);
   }
-  .gfl-slot-btn:hover{
-    filter:brightness(1.08);
-    transform:translateY(-1px);
-    box-shadow:0 10px 20px -8px rgba(224,120,32,.7), inset 0 1px 0 rgba(255,255,255,.3);
-  }
-  .gfl-slot-btn:active{
-    transform:translateY(0);
-    filter:brightness(.95);
-  }
-  .gfl-slot-name{
-    flex:1;
-    font-size:13px;
-    color:#cfdaea;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
+  .gfl-slot-btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 20px -8px rgba(224,120,32,.7),inset 0 1px 0 rgba(255,255,255,.3)}
+  .gfl-slot-btn:active{transform:translateY(0);filter:brightness(.95)}
+  .gfl-slot-name{flex:1;font-size:13px;color:#cfdaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
   .gfl-modal-footer{display:flex;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
   .gfl-modal-cancel{height:32px;padding:0 14px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cfdaea;font-size:12px;cursor:pointer;transition:background .18s,color .18s}
   .gfl-modal-cancel:hover{background:rgba(255,255,255,.10);color:#e6edf8}
@@ -751,6 +770,7 @@
       console.log('instance.definition.labels:', inst && inst.definition && inst.definition.labels);
       console.log('resolved id:', getCurrentAircraftId());
       console.log('slot labels:', getSlotLabels());
+      console.log('current group:', findCurrentGroup(state.groups));
       console.log('-----------------------------------');
     }
   };
@@ -782,7 +802,7 @@
   }
 
   (function init() {
-    LOG('Version 1.2');
+    LOG('Version 1.4');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
     requestAnimationFrame(() => {
