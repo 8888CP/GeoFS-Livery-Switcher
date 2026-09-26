@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
 Notify Discord with rich embeds when livery.json changes.
+First message: title. Then one per aircraft. Last message: total.
 """
 
 import json
 import os
 import subprocess
 import sys
+import time
 import requests
 
 
@@ -66,7 +68,16 @@ def detect_changes(prev_idx, curr_idx):
     return changes
 
 
-def build_embeds(changes):
+def build_embeds(changes, all_data):
+    """
+    Build a list of embeds:
+      [0]  Livery update (title)
+      [1..n] one per aircraft
+      [n+1] Total: X newly added / Y available
+    """
+    total_available = sum(len(ac.get('liveries', [])) for ac in all_data)
+    total_added     = sum(len(ch['added']) for ch in changes)
+
     embeds = [{
         'title' : 'Livery update',
         'color' : 0x2b2d31,
@@ -85,7 +96,44 @@ def build_embeds(changes):
             'color'       : 0x2b2d31,
         })
 
+    # Last embed: totals
+    embeds.append({
+        'description' : f"**Total**: `{total_added}` newly added / `{total_available}` available",
+        'color'       : 0x5865f2,
+    })
+
     return embeds
+
+
+def send_embed(webhook, embed, index, total):
+    payload = {
+        'username': 'Livery updates',
+        'embeds'  : [embed],
+    }
+    try:
+        r = requests.post(webhook, json=payload, timeout=10)
+
+        # Rate limited → wait and retry once
+        if r.status_code == 429:
+            retry_after = 1.0
+            try:
+                retry_after = float(r.json().get('retry_after', 1.0))
+            except Exception:
+                pass
+            print(f'Rate limited, waiting {retry_after}s...')
+            time.sleep(retry_after + 0.5)
+            r = requests.post(webhook, json=payload, timeout=10)
+
+        if r.status_code >= 400:
+            print(f'Discord returned {r.status_code}: {r.text}')
+            return False
+
+        print(f'✓ Sent message {index + 1}/{total}')
+        return True
+
+    except Exception as e:
+        print(f'Failed to send webhook: {e}')
+        return False
 
 
 def main():
@@ -106,23 +154,17 @@ def main():
         print('LIVERY_UPDATE_WEBHOOK not set.')
         return 1
 
-    embeds = build_embeds(changes)
+    embeds = build_embeds(changes, curr)
 
-    for i in range(0, len(embeds), 10):
-        payload = {
-            'username': 'Livery updates',
-            'embeds'  : embeds[i:i + 10],
-        }
-        try:
-            r = requests.post(webhook, json=payload, timeout=10)
-            if r.status_code >= 400:
-                print(f'Discord returned {r.status_code}: {r.text}')
-                return 1
-        except Exception as e:
-            print(f'Failed to send webhook: {e}')
+    for i, embed in enumerate(embeds):
+        ok = send_embed(webhook, embed, i, len(embeds))
+        if not ok:
             return 1
+        # Space out messages to avoid rate limits
+        if i < len(embeds) - 1:
+            time.sleep(1.2)
 
-    print(f'✅ Sent {len(changes)} aircraft update(s) to Discord')
+    print(f'✅ Sent {len(embeds)} message(s) to Discord')
     return 0
 
 
