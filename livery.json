@@ -53,11 +53,11 @@
     "aircraft": "Airbus A330-300",
     "id": "6012",
     "labels": {
-      "Texture": [0, 1, 2, 3],
+      "Texture": [0, 1, 2, 3, 4],
       "Wing texture": [5]
     },
-    "index": [0, 1, 2, 3, 5],
-    "parts": [0, 0, 0, 0, 0],
+    "index": [0, 1, 2, 3, 4, 5],
+    "parts": [0, 0, 0, 0, 0, 0],
     "liveries": [
       {
         "name": "TwinAir Express",
