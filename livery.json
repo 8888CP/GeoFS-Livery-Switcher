@@ -35,7 +35,7 @@
         "name": "TwinAir Express (Oni Air livery)",
         "author": "Nicky",
         "type": "virtual",
-        "tags": ["virtual", "cargo"],
+        "tags": ["virtual", "cargo", "special"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
@@ -92,7 +92,6 @@
         "type": "virtual",
         "tags": ["virtual", "cargo"],
         "texture": [
-          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_42-600/shaders/freighter42_Metallic.webp",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
@@ -113,7 +112,6 @@
         "type": "virtual",
         "tags": ["virtual", "cargo"],
         "texture": [
-          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_72-600/shaders/freighter_Metallic.webp",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
@@ -132,7 +130,7 @@
         "name": "TwinAir Express (Argyle Air Cargo livery)",
         "author": "Nicky",
         "type": "virtual",
-        "tags": ["virtual", "cargo"],
+        "tags": ["virtual", "cargo", "special"],
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
         ]
