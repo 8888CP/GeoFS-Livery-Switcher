@@ -25,5 +25,6 @@
   { "id": "tr",     "name": "Turkey",        "code": "tr", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/tr.svg", "emoji": "🇹🇷" },
   { "id": "id",     "name": "Indonesia",     "code": "id", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/id.svg", "emoji": "🇮🇩" },
   { "id": "ve",     "name": "Venezuela",     "code": "ve", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/ve.svg", "emoji": "🇻🇪" },
+  { "id": "hk",     "name": "Hong Kong, China", "code": "hk", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/hk.svg", "emoji": "🇭🇰" },
   { "id": "other",  "name": "Other / Intl" }
 ]

@@ -117,6 +117,48 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg"
         ]
+      },
+      {
+        "name": "Air Canada (Star Alliance livery)",
+        "author": "KN5290",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "ca",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png"
+        ]
+      },
+      {
+        "name": "Rainbow (Operated by World2Fly)",
+        "author": "KN5290",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "es",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png"
+        ]
+      },
+      {
+        "name": "Cathay Pacific (80 Years Together Sticker)",
+        "author": "KN5290",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "hk",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png"
+        ]
       }
     ]
   },
