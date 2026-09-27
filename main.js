@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.6
+// @version      1.7
 // @description  Aircraft-aware livery browser for GeoFS, with country filter. Press Shift to toggle.
 // @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
@@ -591,7 +591,7 @@
 
   /* ---------- CSS ---------- */
   const CSS = `
-  .gfl-panel{position:fixed;top:70px;left:24px;width:320px;max-height:min(74vh,660px);display:flex;flex-direction:column;border-radius:18px;z-index:2147483000;color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;background:linear-gradient(180deg,rgba(20,26,42,.90) 0%,rgba(11,15,24,.94) 100%);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.09);box-shadow:0 28px 70px -14px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);transition:opacity .24s ease,transform .24s cubic-bezier(.2,.85,.3,1),visibility .24s;transform-origin:top left;--gfl-mx:50%;--gfl-my:0%;overflow:hidden;user-select:none;-webkit-user-select:none}
+  .gfl-panel{position:fixed;top:70px;left:24px;width:320px;max-height:min(58vh,440px);display:flex;flex-direction:column;border-radius:18px;z-index:2147483000;color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;background:linear-gradient(180deg,rgba(20,26,42,.90) 0%,rgba(11,15,24,.94) 100%);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.09);box-shadow:0 28px 70px -14px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);transition:opacity .24s ease,transform .24s cubic-bezier(.2,.85,.3,1),visibility .24s;transform-origin:top left;--gfl-mx:50%;--gfl-my:0%;overflow:hidden;user-select:none;-webkit-user-select:none}
   .gfl-panel.gfl-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.93) translateY(-10px)}
   .gfl-glow{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .35s ease;background:radial-gradient(420px circle at var(--gfl-mx) var(--gfl-my),rgba(88,166,255,.16),rgba(140,110,255,.07) 42%,transparent 68%)}
   .gfl-panel:hover .gfl-glow{opacity:1}
@@ -615,6 +615,7 @@
   .gfl-filters{display:flex;flex-direction:column;gap:8px;margin:0 14px;flex-shrink:0}
   .gfl-filters .gfl-select{margin:0}
   .gfl-select{position:relative;z-index:3}
+  .gfl-select.gfl-open{z-index:20}
   .gfl-select-left{display:flex;align-items:center;gap:7px;min-width:0}
   .gfl-select-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .gfl-select-flag{display:none;width:18px;height:13px;flex-shrink:0}
@@ -626,9 +627,9 @@
   .gfl-select.gfl-open .gfl-select-btn{border-color:rgba(88,166,255,.55);background:rgba(88,166,255,.07);box-shadow:0 0 0 3px rgba(88,166,255,.10)}
   .gfl-caret{width:14px;height:14px;flex-shrink:0;fill:none;stroke:#7c8ba1;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform .28s cubic-bezier(.2,.8,.3,1),stroke .2s}
   .gfl-select.gfl-open .gfl-caret{transform:rotate(180deg);stroke:#58a6ff}
-  .gfl-select-list{overflow:hidden;max-height:0;opacity:0;margin-top:0;transition:max-height .3s cubic-bezier(.2,.8,.3,1),opacity .22s ease,margin-top .3s}
-  .gfl-select.gfl-open .gfl-select-list{max-height:250px;opacity:1;margin-top:6px}
-  .gfl-select-inner{max-height:250px;overflow-y:auto;padding:6px;border-radius:12px;background:rgba(10,14,22,.92);border:1px solid rgba(255,255,255,.08);box-shadow:0 12px 30px -8px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
+  .gfl-select-list{position:absolute;left:0;right:0;top:100%;overflow:hidden;max-height:0;opacity:0;margin-top:0;transition:max-height .3s cubic-bezier(.2,.8,.3,1),opacity .22s ease,margin-top .3s}
+  .gfl-select.gfl-open .gfl-select-list{max-height:220px;opacity:1;margin-top:6px}
+  .gfl-select-inner{max-height:220px;overflow-y:auto;padding:6px;border-radius:12px;background:rgba(10,14,22,.92);border:1px solid rgba(255,255,255,.08);box-shadow:0 12px 30px -8px rgba(0,0,0,.7);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.18) transparent}
   .gfl-opt{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:12.5px;color:#b9c6d8;transition:background .15s,color .15s}
   .gfl-opt:hover{background:rgba(255,255,255,.06);color:#e6edf8}
   .gfl-opt.gfl-active{background:linear-gradient(90deg,rgba(88,166,255,.18),rgba(140,110,255,.10));color:#9dcbff;font-weight:500}
@@ -652,7 +653,7 @@
   .gfl-card:hover::before{opacity:1}
   .gfl-card.gfl-loading{opacity:.55;pointer-events:none}
   .gfl-info{flex:1;min-width:0}
-  .gfl-name{font-size:13px;font-weight:600;color:#e8f0fd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+  .gfl-name{font-size:13px;font-weight:600;color:#e8f0fd;margin-bottom:3px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word}
   .gfl-sub{font-size:10.5px;color:#7c8ba1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px}
   .gfl-author{color:#8fa5c2}
   .gfl-tags{display:flex;gap:4px;flex-wrap:wrap}
@@ -1014,7 +1015,7 @@
   }
 
   (function init() {
-    LOG('Version 1.6');
+    LOG('Version 1.7');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
     requestAnimationFrame(() => {
