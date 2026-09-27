@@ -13,6 +13,7 @@
         "author": "CP8888 & KN5290",
         "type": "pax",
         "tags": ["pax", "real"],
+        "country": "cn",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Hainan_Airlines_V1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Hainan_Airlines_V1.png",
@@ -26,6 +27,7 @@
         "author": "CP8888",
         "type": "pax",
         "tags": ["pax", "real"],
+        "country": "ve",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/Avior.jpg",
@@ -39,6 +41,7 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo", "special"],
+        "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
@@ -64,6 +67,7 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
+        "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png",
@@ -77,6 +81,7 @@
         "author": "Nicky",
         "type": "real",
         "tags": ["real", "cargo"],
+        "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
@@ -90,6 +95,7 @@
         "author": "Nicky & CP8888",
         "type": "real",
         "tags": ["real", "pax"],
+        "country": "id",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
@@ -114,6 +120,7 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
+        "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
@@ -137,6 +144,7 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo"],
+        "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
@@ -160,6 +168,7 @@
         "author": "Nicky",
         "type": "virtual",
         "tags": ["virtual", "cargo", "special"],
+        "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
         ]
@@ -180,6 +189,7 @@
         "author": "A 5APU",
         "type": "real",
         "tags": ["real", "pax", "special"],
+        "country": "gb",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a346/a340-600 abig.png"
         ]
@@ -201,6 +211,7 @@
         "author": "A 5APU",
         "type": "real",
         "tags": ["real", "pax"],
+        "country": "kr",
         "texture": [
           "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/boeing_b777-200er/shaders/original.webp",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b772ER/772 asiana old.png"

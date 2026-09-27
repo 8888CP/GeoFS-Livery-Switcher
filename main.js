@@ -2,7 +2,7 @@
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
 // @version      1.5
-// @description  Aircraft-aware livery browser for GeoFS. Press Shift to toggle.
+// @description  Aircraft-aware livery browser for GeoFS, with country filter. Press Shift to toggle.
 // @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
 // @match        https://geo-fs.com/geofs.php*
@@ -19,6 +19,7 @@
 
   const CONFIG = {
     jsonUrl    : 'https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/livery.json',
+    flagsUrl   : 'https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/flags.json',
     title      : 'GeoFS Livery Switcher',
     startHidden: false,
     toggleKey  : 'Shift',
@@ -36,8 +37,31 @@
   ];
   const TYPE_MAP = Object.fromEntries(TYPES.map(t => [t.id, t.name]));
 
+  /* ============================================================
+   *  国家分类 + 国旗
+   *  数据全部来自 flags.json（运行时拉取），脚本里不再写死。
+   *  flag 使用 flagcdn.com 的国旗图片（跨平台稳定显示），
+   *  emoji 作为图片加载失败时的回退。
+   * ============================================================ */
+  let COUNTRIES = [];
+  const COUNTRY_MAP = {};
+  let countrySel = null;
+
+  function flagHtmlFor(id, extraCls) {
+    const co = COUNTRIES.find(x => x.id === id);
+    if (!co) return '';
+    const cls = 'gfl-flag' + (extraCls ? ' ' + extraCls : '');
+    if (co.flag) {
+      return '<img class="' + cls + '" src="' + esc(co.flag) + '" alt="' + esc(co.code || co.id) +
+        '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'">' +
+        '<span class="gfl-flag-fallback" style="display:none">' + esc(co.emoji || '') + '</span>';
+    }
+    if (co.emoji) return '<span class="' + cls + '">' + co.emoji + '</span>';
+    return '';
+  }
+
   const state = {
-    groups: [], data: [], query: '', type: 'all',
+    groups: [], data: [], query: '', type: 'all', country: 'all',
     open: !CONFIG.startHidden,
     currentAcId: null, lastError: ''
   };
@@ -320,16 +344,10 @@
         <circle cx="11" cy="11" r="7"></circle>
         <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
       </svg>
-      <input class="gfl-search" type="text" placeholder="Search by livery name, author, or aircraft…" spellcheck="false">
+      <input class="gfl-search" type="text" placeholder="Search by livery name, author, or aircraft…" spellcheck="false" autocomplete="off">
       <button class="gfl-search-clear" title="Clear">✕</button>
     </div>
-    <div class="gfl-select">
-      <button class="gfl-select-btn">
-        <span class="gfl-select-label">All Liveries</span>
-        <svg class="gfl-caret" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-      </button>
-      <div class="gfl-select-list"><div class="gfl-select-inner"></div></div>
-    </div>
+    <div class="gfl-filters"></div>
     <div class="gfl-list"></div>
     <div class="gfl-footer">
       <span class="gfl-count">0 liveries</span>
@@ -345,10 +363,7 @@
   const headerEl    = $('.gfl-header');
   const searchEl    = $('.gfl-search');
   const clearEl     = $('.gfl-search-clear');
-  const selectEl    = $('.gfl-select');
-  const selectBtn   = $('.gfl-select-btn');
-  const selectLbl   = $('.gfl-select-label');
-  const selectInner = $('.gfl-select-inner');
+  const filtersEl   = $('.gfl-filters');
   const listEl      = $('.gfl-list');
   const countEl     = $('.gfl-count');
   const reloadBtn   = $('.gfl-reload');
@@ -379,7 +394,6 @@
   const modalBody     = modal.querySelector('.gfl-modal-body');
 
   function openModal() {
-    // 打开时预热模型缓存
     invalidateModelCache();
     getCachedModels();
     modal.classList.remove('gfl-hidden');
@@ -442,7 +456,6 @@
           return;
         }
 
-        // Blob URL，跳过 base64
         const blobUrl = URL.createObjectURL(f);
         applyTestTexture(blobUrl, row.slots);
         setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
@@ -455,6 +468,126 @@
     if (!inst) { toast('Load an aircraft first'); return; }
     openModal();
   });
+
+  /* ============================================================
+   *  新增：通用下拉框工厂（类型 / 国家）
+   * ============================================================ */
+  function flagHtml(o) {
+    if (o.flag) {
+      return '<img class="gfl-flag" src="' + esc(o.flag) + '" alt="' + esc(o.code || o.id) +
+        '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'">' +
+        '<span class="gfl-flag-fallback" style="display:none">' + esc(o.emoji || o.code || '') + '</span>';
+    }
+    if (o.emoji) return '<span class="gfl-opt-icon">' + o.emoji + '</span>';
+    return '';
+  }
+
+  function createSelect(kind, options) {
+    const wrap = document.createElement('div');
+    wrap.className = 'gfl-select' + (kind === 'country' ? ' gfl-country' : '');
+    wrap.dataset.kind = kind;
+    wrap.innerHTML =
+      '<button class="gfl-select-btn">' +
+        '<span class="gfl-select-left">' +
+          '<span class="gfl-select-flag"></span>' +
+          '<span class="gfl-select-label"></span>' +
+        '</span>' +
+        '<svg class="gfl-caret" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>' +
+      '</button>' +
+      '<div class="gfl-select-list"><div class="gfl-select-inner"></div></div>';
+
+    const btn   = wrap.querySelector('.gfl-select-btn');
+    const lbl   = wrap.querySelector('.gfl-select-label');
+    const flag  = wrap.querySelector('.gfl-select-flag');
+    const inner = wrap.querySelector('.gfl-select-inner');
+
+    function refreshOptions() {
+      const current = kind === 'type' ? state.type : state.country;
+      inner.innerHTML = options.map(o => {
+        const n = kind === 'type' ? countByType(o.id) : countByCountry(o.id);
+        return '<div class="gfl-opt ' + (current === o.id ? 'gfl-active' : '') + '" data-id="' + esc(o.id) + '">' +
+          flagHtml(o) +
+          '<span class="gfl-opt-name">' + esc(o.name) + '</span>' +
+          '<span class="gfl-opt-num">' + n + '</span>' +
+        '</div>';
+      }).join('');
+    }
+
+    function setCurrent(id) {
+      const o = options.find(x => x.id === id) || options[0];
+      lbl.textContent = o.name;
+      if (o.flag) {
+        flag.innerHTML = '<img class="gfl-flag" src="' + esc(o.flag) + '" alt="' + esc(o.code || o.id) +
+          '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'">' +
+          '<span class="gfl-flag-fallback" style="display:none">' + esc(o.emoji || o.code || '') + '</span>';
+        flag.style.display = '';
+      } else if (o.emoji) {
+        flag.textContent = o.emoji;
+        flag.style.display = '';
+      } else {
+        flag.textContent = '';
+        flag.style.display = 'none';
+      }
+    }
+
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const willOpen = !wrap.classList.contains('gfl-open');
+      document.querySelectorAll('.gfl-select.gfl-open').forEach(s => s.classList.remove('gfl-open'));
+      if (willOpen) { wrap.classList.add('gfl-open'); refreshOptions(); }
+    });
+
+    inner.addEventListener('click', e => {
+      const opt = e.target.closest('.gfl-opt');
+      if (!opt) return;
+      const id = opt.dataset.id;
+      if (kind === 'type') state.type = id; else state.country = id;
+      setCurrent(id);
+      wrap.classList.remove('gfl-open');
+      refreshSelects();
+      renderList();
+    });
+
+    setCurrent(kind === 'type' ? state.type : state.country);
+    refreshOptions();
+
+    return { wrap, refreshOptions, setCurrent };
+  }
+
+  const typeSel = createSelect('type', TYPES);
+  filtersEl.appendChild(typeSel.wrap);
+
+  function ensureCountrySelect() {
+    if (countrySel || !COUNTRIES.length) return;
+    countrySel = createSelect('country', COUNTRIES);
+    filtersEl.appendChild(countrySel.wrap);
+    refreshSelects();
+  }
+
+  function refreshSelects() {
+    typeSel.refreshOptions();
+    if (countrySel) countrySel.refreshOptions();
+  }
+
+  /* ============================================================
+   *  新增：输入时按键不干扰游戏
+   *  1) 搜索框自身的 keydown/keypress/keyup 在捕获阶段就停止冒泡，
+   *     阻止 GeoFS 的冒泡阶段键盘监听收到按键。
+   *  2) 在 window 捕获阶段加一层守卫：只要焦点落在我们的输入框内，
+   *     直接 stopImmediatePropagation，连 GeoFS 的捕获阶段监听也拦下。
+   *  （注意：只拦截传播，不 preventDefault，所以输入/中文输入法正常。）
+   * ============================================================ */
+  function blockGameKeys(el) {
+    if (!el) return;
+    ['keydown', 'keypress', 'keyup'].forEach(type => {
+      el.addEventListener(type, e => { e.stopPropagation(); }, true);
+    });
+  }
+  blockGameKeys(searchEl);
+
+  window.addEventListener('keydown', e => {
+    if (isTyping()) e.stopImmediatePropagation();
+  }, true);
 
   /* ---------- CSS ---------- */
   const CSS = `
@@ -479,7 +612,15 @@
   .gfl-search-clear{position:absolute;right:23px;top:50%;transform:translateY(-62%);width:17px;height:17px;border:none;border-radius:50%;background:rgba(255,255,255,.10);color:#9aa8bd;font-size:9px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;transition:background .18s,color .18s}
   .gfl-search-clear:hover{background:rgba(255,255,255,.2);color:#fff}
   .gfl-search-clear.gfl-on{display:flex}
-  .gfl-select{position:relative;z-index:3;margin:0 14px;flex-shrink:0}
+  .gfl-filters{display:flex;flex-direction:column;gap:8px;margin:0 14px;flex-shrink:0}
+  .gfl-filters .gfl-select{margin:0}
+  .gfl-select{position:relative;z-index:3}
+  .gfl-select-left{display:flex;align-items:center;gap:7px;min-width:0}
+  .gfl-select-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gfl-select-flag{display:none;width:18px;height:13px;flex-shrink:0}
+  .gfl-flag{width:18px;height:13px;border-radius:2px;object-fit:cover;display:inline-block;vertical-align:middle;box-shadow:0 0 0 1px rgba(255,255,255,.18);flex-shrink:0}
+  .gfl-flag-fallback{font-size:13px;line-height:1}
+  .gfl-name-flag{margin-left:5px}
   .gfl-select-btn{width:100%;height:37px;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-radius:11px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.075);color:#cfdaea;font:inherit;font-size:12.5px;cursor:pointer;outline:none;transition:border-color .2s,background .2s,box-shadow .2s}
   .gfl-select-btn:hover{background:rgba(255,255,255,.075)}
   .gfl-select.gfl-open .gfl-select-btn{border-color:rgba(88,166,255,.55);background:rgba(88,166,255,.07);box-shadow:0 0 0 3px rgba(88,166,255,.10)}
@@ -516,6 +657,7 @@
   .gfl-author{color:#8fa5c2}
   .gfl-tags{display:flex;gap:4px;flex-wrap:wrap}
   .gfl-tag{font-size:9.5px;line-height:1;padding:3px 6px;border-radius:5px;background:rgba(88,166,255,.10);color:#7fb0e8;border:1px solid rgba(88,166,255,.16);white-space:nowrap}
+  .gfl-tag-country{padding:3px 4px}
   .gfl-empty{padding:34px 16px;text-align:center;color:#5d6b80;font-size:12px}
   .gfl-empty span{display:block;font-size:24px;margin-bottom:8px;opacity:.4}
   .gfl-empty code{color:#8fa5c2;font-size:10.5px;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px;word-break:break-all;display:inline-block;margin-top:6px;max-width:100%}
@@ -619,29 +761,14 @@
     renderList(); searchEl.focus();
   });
 
-  selectBtn.addEventListener('click', e => { e.stopPropagation(); selectEl.classList.toggle('gfl-open'); });
-  document.addEventListener('click', e => { if (!selectEl.contains(e.target)) selectEl.classList.remove('gfl-open'); });
-  panel.addEventListener('click', e => { if (!selectEl.contains(e.target)) selectEl.classList.remove('gfl-open'); });
+  document.addEventListener('click', e => {
+    document.querySelectorAll('.gfl-select.gfl-open').forEach(s => { if (!s.contains(e.target)) s.classList.remove('gfl-open'); });
+  });
+  panel.addEventListener('click', e => {
+    document.querySelectorAll('.gfl-select.gfl-open').forEach(s => { if (!s.contains(e.target)) s.classList.remove('gfl-open'); });
+  });
 
   reloadBtn.addEventListener('click', () => { LOG('Manual reload'); loadData(); });
-
-  function renderSelect() {
-    selectInner.innerHTML = TYPES.map(t => {
-      const n = countByType(t.id);
-      return `<div class="gfl-opt ${state.type === t.id ? 'gfl-active' : ''}" data-type="${t.id}">
-        <span class="gfl-opt-icon">${t.icon}</span>
-        <span class="gfl-opt-name">${esc(t.name)}</span>
-        <span class="gfl-opt-num">${n}</span></div>`;
-    }).join('');
-  }
-  selectInner.addEventListener('click', e => {
-    const opt = e.target.closest('.gfl-opt');
-    if (!opt) return;
-    state.type = opt.dataset.type;
-    selectLbl.textContent = TYPE_MAP[state.type] || 'All Liveries';
-    selectEl.classList.remove('gfl-open');
-    renderSelect(); renderList();
-  });
 
   function matchesType(item, typeId) {
     if (typeId === 'all') return true;
@@ -649,19 +776,32 @@
     if (t === typeId) return true;
     return (item.tags || []).map(x => String(x).toLowerCase()).includes(typeId);
   }
+  function matchesCountry(item, countryId) {
+    if (countryId === 'all') return true;
+    return String(item.country || '') === String(countryId);
+  }
+  function liveryPasses(item, f) {
+    if (!matchesType(item, f.type)) return false;
+    if (!matchesCountry(item, f.country)) return false;
+    if (f.query) {
+      const q = f.query.trim().toLowerCase();
+      if (q) {
+        const hay = [item.name, item.author, item.type, item.desc, item.country, COUNTRY_MAP[item.country], ...(item.tags || [])]
+          .filter(Boolean).join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+    }
+    return true;
+  }
   function countByType(typeId) {
-    if (typeId === 'all') return state.data.length;
-    return state.data.filter(x => matchesType(x, typeId)).length;
+    return state.data.filter(x => liveryPasses(x, { type: typeId, country: state.country, query: state.query })).length;
+  }
+  function countByCountry(countryId) {
+    return state.data.filter(x => liveryPasses(x, { type: state.type, country: countryId, query: state.query })).length;
   }
   function getFiltered() {
     const q = state.query.trim().toLowerCase();
-    const list = state.data.filter(item => {
-      if (!matchesType(item, state.type)) return false;
-      if (!q) return true;
-      const hay = [item.name, item.author, item.type, item.desc, ...(item.tags || [])]
-        .filter(Boolean).join(' ').toLowerCase();
-      return hay.includes(q);
-    });
+    const list = state.data.filter(item => liveryPasses(item, { type: state.type, country: state.country, query: q }));
     list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' }));
     return list;
   }
@@ -703,13 +843,27 @@
     const tags = (item.tags || []).slice(0, CONFIG.maxThumbs);
     if (!tags.length && item.type) tags.push(TYPE_MAP[item.type] || item.type);
 
+    const c = item.country;
+    let flagTag = '';
+    if (c && c !== 'all') {
+      const co = COUNTRIES.find(x => x.id === c);
+      if (co) {
+        flagTag = co.flag
+          ? '<span class="gfl-tag gfl-tag-country"><img class="gfl-flag" src="' + esc(co.flag) + '" alt="' + esc(co.code || co.id) +
+              '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'"><span class="gfl-flag-fallback" style="display:none">' + esc(co.emoji || '') + '</span></span>'
+          : '<span class="gfl-tag gfl-tag-country">' + esc(co.emoji || COUNTRY_MAP[c] || '') + '</span>';
+      }
+    }
+
+    const nameFlag = (c && c !== 'all') ? flagHtmlFor(c, 'gfl-name-flag') : '';
+
     el.innerHTML = `
       <div class="gfl-info">
-        <div class="gfl-name">${esc(name)}</div>
+        <div class="gfl-name">${esc(name)}${nameFlag ? ' ' + nameFlag : ''}</div>
         <div class="gfl-sub">
           <span class="gfl-author">by ${esc(item.author || 'Unknown')}</span>
         </div>
-        <div class="gfl-tags">${tags.map(t => `<span class="gfl-tag">${esc(TYPE_MAP[t] || t)}</span>`).join('')}</div>
+        <div class="gfl-tags">${flagTag}${tags.map(t => `<span class="gfl-tag">${esc(TYPE_MAP[t] || t)}</span>`).join('')}</div>
       </div>
     `;
     el.addEventListener('click', () => applyLivery(item, el));
@@ -772,7 +926,6 @@
 
     if (cardEl) cardEl.classList.add('gfl-loading');
 
-    // 按 part 分组，避免重复遍历
     const byPart = new Map();
     for (const it of valid) {
       const p = it.part != null ? it.part : 0;
@@ -828,6 +981,24 @@
       type: 'virtual', tags: ['Sample'], texture: '' }]
   }];
 
+  async function loadFlags() {
+    try {
+      const json = await fetchJson(CONFIG.flagsUrl);
+      COUNTRIES = Array.isArray(json) ? json : (json.countries || []);
+      COUNTRIES.forEach(c => { COUNTRY_MAP[c.id] = c.name; });
+      LOG('Loaded', COUNTRIES.length, 'countries');
+    } catch (err) {
+      ERR('Flags load failed:', err);
+      COUNTRIES = [
+        { id: 'all',   name: 'All Countries', emoji: '🌐' },
+        { id: 'other', name: 'Other / Intl',  emoji: '🏳️' }
+      ];
+      COUNTRIES.forEach(c => { COUNTRY_MAP[c.id] = c.name; });
+    }
+    ensureCountrySelect();
+    renderList();
+  }
+
   async function loadData() {
     state.lastError = '';
     let groups = [];
@@ -845,10 +1016,9 @@
     state.groups = groups;
     state.data = flattenForCurrentAircraft(groups);
 
-    // 飞机切换后清缓存
     invalidateModelCache();
 
-    renderSelect();
+    refreshSelects();
     renderList();
   }
 
@@ -862,6 +1032,7 @@
       if (r.right > window.innerWidth) panel.style.left = Math.max(10, window.innerWidth - r.width - 16) + 'px';
     });
 
+    loadFlags();
     loadData();
 
     let lastId = getCurrentAircraftId();
