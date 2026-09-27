@@ -159,6 +159,48 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png"
         ]
+      },
+      {
+        "name": "AeroUnion (green livery)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "cargo", "special"],
+        "country": "us",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png"
+        ]
+      },
+      {
+        "name": "Aeroflot (VQ-BPJ)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "ru",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg"
+        ]
+      },
+      {
+        "name": "Aeroflot",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "ru",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg"
+        ]
       }
     ]
   },
