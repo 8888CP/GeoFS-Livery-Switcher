@@ -49,6 +49,20 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/B734_FLX_2.png"
         ]
+      },
+      {
+        "name": "JAL Express (old design)",
+        "author": "kopinokami222",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "jp",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png"
+        ]
       }
     ]
   },
@@ -110,10 +124,12 @@
     "aircraft": "ATR 42-600",
     "id": "2426",
     "labels": {
-      "Texture": [0, 1, 2, 3]
+      "Texture": [0, 1, 2, 3],
+      "Normal map": [4],
+      "Metallic shader": [5]
     },
-    "index": [0, 1, 2, 3],
-    "parts": [0, 0, 0, 0],
+    "index": [1, 3, 4, 5, 0, 2],
+    "parts": [0, 0, 0, 0, 0],
     "liveries": [
       {
         "name": "TwinAir Express",
@@ -125,7 +141,9 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png"
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr42/ATR42_-_TWN_1.png",
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_42-600/shaders/ATR42_Normal.webp",
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_42-600/shaders/freighter42_Metallic.webp"
         ]
       }
     ]
@@ -134,10 +152,12 @@
     "aircraft": "ATR 72-600",
     "id": "2420",
     "labels": {
-      "Texture": [0, 1, 2, 3]
+      "Texture": [0, 1, 2, 3],
+      "Normal map": [4],
+      "Metallic shader": [5]
     },
-    "index": [0, 1, 2, 3],
-    "parts": [0, 0, 0, 0],
+    "index": [0, 1, 2, 5, 4, 6],
+    "parts": [0, 0, 0, 0, 0, 0],
     "liveries": [
       {
         "name": "TwinAir Express",
@@ -149,7 +169,9 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png"
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/atr72/ATR72_-_TWN.png",
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_72-600/shaders/freighter_Normal.webp",
+          "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/ATR_72-600/shaders/freighter_Metallic.webp"
         ]
       }
     ]
@@ -215,6 +237,27 @@
         "texture": [
           "https://raw.githubusercontent.com/kolos26/GEOFS-LiverySelector/refs/heads/main/liveries/boeing_b777-200er/shaders/original.webp",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b772ER/772 asiana old.png"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Airbus A330-900neo",
+    "id": "4631",
+    "labels": {
+      "Texture": [0]
+    },
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "Japan Airlines",
+        "author": "kopinokami222",
+        "type": "virtual",
+        "tags": ["virtual", "pax"],
+        "country": "jp",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a339/japan.png"
         ]
       }
     ]

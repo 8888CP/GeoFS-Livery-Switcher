@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.5
+// @version      1.6
 // @description  Aircraft-aware livery browser for GeoFS, with country filter. Press Shift to toggle.
 // @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
@@ -344,7 +344,7 @@
         <circle cx="11" cy="11" r="7"></circle>
         <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
       </svg>
-      <input class="gfl-search" type="text" placeholder="Search by livery name, author, or aircraft…" spellcheck="false" autocomplete="off">
+      <input class="gfl-search" type="text" placeholder="Search by livery name or author…" spellcheck="false" autocomplete="off">
       <button class="gfl-search-clear" title="Clear">✕</button>
     </div>
     <div class="gfl-filters"></div>
@@ -657,7 +657,6 @@
   .gfl-author{color:#8fa5c2}
   .gfl-tags{display:flex;gap:4px;flex-wrap:wrap}
   .gfl-tag{font-size:9.5px;line-height:1;padding:3px 6px;border-radius:5px;background:rgba(88,166,255,.10);color:#7fb0e8;border:1px solid rgba(88,166,255,.16);white-space:nowrap}
-  .gfl-tag-country{padding:3px 4px}
   .gfl-empty{padding:34px 16px;text-align:center;color:#5d6b80;font-size:12px}
   .gfl-empty span{display:block;font-size:24px;margin-bottom:8px;opacity:.4}
   .gfl-empty code{color:#8fa5c2;font-size:10.5px;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px;word-break:break-all;display:inline-block;margin-top:6px;max-width:100%}
@@ -786,7 +785,10 @@
     if (f.query) {
       const q = f.query.trim().toLowerCase();
       if (q) {
-        const hay = [item.name, item.author, item.type, item.desc, item.country, COUNTRY_MAP[item.country], ...(item.tags || [])]
+        // 只匹配卡片上可见的内容：涂装名 + 作者。
+        // 不包含国家/类型/标签等隐藏字段（它们已有独立筛选框），
+        // 否则会出现「名字里明明没有该字母却被搜出来」的困惑。
+        const hay = [item.name, item.author]
           .filter(Boolean).join(' ').toLowerCase();
         if (!hay.includes(q)) return false;
       }
@@ -844,17 +846,6 @@
     if (!tags.length && item.type) tags.push(TYPE_MAP[item.type] || item.type);
 
     const c = item.country;
-    let flagTag = '';
-    if (c && c !== 'all') {
-      const co = COUNTRIES.find(x => x.id === c);
-      if (co) {
-        flagTag = co.flag
-          ? '<span class="gfl-tag gfl-tag-country"><img class="gfl-flag" src="' + esc(co.flag) + '" alt="' + esc(co.code || co.id) +
-              '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline\'"><span class="gfl-flag-fallback" style="display:none">' + esc(co.emoji || '') + '</span></span>'
-          : '<span class="gfl-tag gfl-tag-country">' + esc(co.emoji || COUNTRY_MAP[c] || '') + '</span>';
-      }
-    }
-
     const nameFlag = (c && c !== 'all') ? flagHtmlFor(c, 'gfl-name-flag') : '';
 
     el.innerHTML = `
@@ -863,7 +854,7 @@
         <div class="gfl-sub">
           <span class="gfl-author">by ${esc(item.author || 'Unknown')}</span>
         </div>
-        <div class="gfl-tags">${flagTag}${tags.map(t => `<span class="gfl-tag">${esc(TYPE_MAP[t] || t)}</span>`).join('')}</div>
+        <div class="gfl-tags">${tags.map(t => `<span class="gfl-tag">${esc(TYPE_MAP[t] || t)}</span>`).join('')}</div>
       </div>
     `;
     el.addEventListener('click', () => applyLivery(item, el));
@@ -1023,7 +1014,7 @@
   }
 
   (function init() {
-    LOG('Version 1.5');
+    LOG('Version 1.6');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
     requestAnimationFrame(() => {
