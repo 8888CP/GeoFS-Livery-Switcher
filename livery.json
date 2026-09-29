@@ -70,10 +70,9 @@
     "aircraft": "Airbus A330-300",
     "id": "6012",
     "labels": {
-      "Texture": [0],
-      "Wing texture": [3]
+      "Texture": [0, 1]
     },
-    "index": [0, 3],
+    "index": [0, 4],
     "parts": [0, 0],
     "liveries": [
       {
@@ -83,6 +82,7 @@
         "tags": ["virtual", "cargo"],
         "country": "us",
         "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_TWN_1.png"
         ]
       },
@@ -93,9 +93,6 @@
         "tags": ["real", "cargo"],
         "country": "us",
         "texture": [
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/A333_-_Tampa_3.png"
         ]
@@ -108,9 +105,6 @@
         "country": "id",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Lion_Air.jpg"
         ]
       },
@@ -121,9 +115,6 @@
         "tags": ["real", "pax", "special"],
         "country": "ca",
         "texture": [
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GHLM.png"
         ]
@@ -136,9 +127,6 @@
         "country": "es",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-OHV.png"
         ]
       },
@@ -149,9 +137,6 @@
         "tags": ["real", "pax", "special"],
         "country": "hk",
         "texture": [
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/cx80.png"
         ]
@@ -164,9 +149,6 @@
         "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AeroUnion_green.png"
         ]
       },
@@ -178,9 +160,6 @@
         "country": "ru",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/VQ-BPJ.jpg"
         ]
       },
@@ -191,9 +170,6 @@
         "tags": ["real", "pax"],
         "country": "ru",
         "texture": [
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg"
         ]
