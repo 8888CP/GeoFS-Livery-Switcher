@@ -351,14 +351,14 @@
         ]
       },
       {
-        "name": "Saudia Arabian Airlines (Skyteam livery)",
-        "author": "KN5290",
+        "name": "KMS Prinz Eugen (Test registration)",
+        "author": "Nicky",
         "type": "real",
-        "tags": ["real", "pax", "special"],
-        "country": "sa",
+        "tags": ["virtual", "pax", "special"],
+        "country": "",
         "texture": [
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png",
-          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png"
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/D-EUGN.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/D-EUGN.png"
         ]
       },
       {
