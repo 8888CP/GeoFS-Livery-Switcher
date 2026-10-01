@@ -1,6 +1,6 @@
 [
   {
-    "aircraft": "Boeing 737-400",
+    "aircraft": "Boeing b737-400",
     "id": "6131",
     "labels": {
       "Texture": [0, 1, 2, 3, 4]
@@ -173,6 +173,204 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot.jpg"
         ]
+      },
+      {
+        "name": "AeroUnion (blank livery)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "cargo", "special"],
+        "country": "us",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/N337QT.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/N337QT.png"
+        ]
+      },
+      {
+        "name": "Iberojet",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "es",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Iberojet.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Iberojet.png"
+        ]
+      },
+      {
+        "name": "Discover Airlines (new design)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Discovernew.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Discovernew.png"
+        ]
+      },
+      {
+        "name": "Discover Airlines (Eurowings design V1)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Discoverv1.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Discoverv1.png"
+        ]
+      },
+      {
+        "name": "Discover Airlines (Eurowings design V2)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Discoverv2.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Discoverv2.png"
+        ]
+      },
+      {
+        "name": "Aeroflot (Skyteam livery)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "ru",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot_sky.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aeroflot_sky.png"
+        ]
+      },
+      {
+        "name": "Centrum Air",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "uz",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Centrum.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Centrum.png"
+        ]
+      },
+      {
+        "name": "Centrum Air (Imom Al-Buxoriy)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "uz",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Centrum2.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Centrum2.png"
+        ]
+      },
+      {
+        "name": "SAS (Star Alliance logo)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_Star.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_Star.png"
+        ]
+      },
+      {
+        "name": "SAS (Skyteam logo V1)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_Sky1.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_Sky1.png"
+        ]
+      },
+      {
+        "name": "SAS (Skyteam logo V2)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_Sky2.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_Sky2.png"
+        ]
+      },
+      {
+        "name": "SAS (Without logo)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_withoutlogo.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_withoutlogo.png"
+        ]
+      },
+      {
+        "name": "SAS (old design V1)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_old1.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_old1.png"
+        ]
+      },
+      {
+        "name": "SAS (old design V2)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_old2.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_old2.png"
+        ]
+      },
+      {
+        "name": "SAS (new design)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_new.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS_new.png"
+        ]
+      },
+      {
+        "name": "SAS (Celebrating 80 Years livery)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "dk, no, se",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS80.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/SAS80.png"
+        ]
+      },
+      {
+        "name": "Saudia Arabian Airlines (Skyteam livery)",
+        "author": "KN5290",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "sa",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png"
+        ]
+      },
+      {
+        "name": "Saudia Arabian Airlines (Skyteam livery)",
+        "author": "KN5290",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "sa",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png"
+        ]
       }
     ]
   },
@@ -233,7 +431,7 @@
     ]
   },
   {
-    "aircraft": "Boeing 737-800 (wingletless)",
+    "aircraft": "Boeing b737-800 (wingletless)",
     "id": "3054",
     "labels": {
       "Texture": [0]
@@ -314,6 +512,37 @@
         "country": "jp",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a339/japan.png"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Boeing b787-9",
+    "id": "3575",
+    "labels": {
+      "Texture": [0]
+    },
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "Air China",
+        "author": "CP8888",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "cn",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/Air_China.jpg"
+        ]
+      },
+      {
+        "name": "Air China (white nose)",
+        "author": "CP8888",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "cn",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/Air_China_B-7878.jpg"
         ]
       }
     ]
