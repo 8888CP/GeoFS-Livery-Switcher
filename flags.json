@@ -26,6 +26,7 @@
   { "id": "id",     "name": "Indonesia",     "code": "id", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/id.svg", "emoji": "🇮🇩" },
   { "id": "ve",     "name": "Venezuela",     "code": "ve", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/ve.svg", "emoji": "🇻🇪" },
   { "id": "uz",     "name": "Uzbekistan",    "code": "uz", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/uz.svg", "emoji": "🇺🇿" },
+  { "id": "kz",     "name": "Kazakhstan",    "code": "kz", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/kz.svg", "emoji": "🇰🇿" },
   { "id": "dk",     "name": "Denmark",       "code": "dk", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/dk.svg", "emoji": "🇩🇰" },
   { "id": "no",     "name": "Norway",        "code": "no", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/no.svg", "emoji": "🇳🇴" },
   { "id": "se",     "name": "Sweden",        "code": "se", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/se.svg", "emoji": "🇸🇪" },

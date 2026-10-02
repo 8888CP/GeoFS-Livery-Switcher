@@ -371,6 +371,39 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_sky.png"
         ]
+      },
+      {
+        "name": "Air Canada (new design)",
+        "author": "Yicha",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "ca",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AirCanada_new.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/AirCanada_new.png"
+        ]
+      },
+      {
+        "name": "Airbus house livery (new design)",
+        "author": "Yicha",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/airbusnew.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/airbusnew.png"
+        ]
+      },
+      {
+        "name": "Airbus house livery (p2f)",
+        "author": "Yicha",
+        "type": "real",
+        "tags": ["real", "cargo"],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/airbusp2f.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/airbusp2f.png"
+        ]
       }
     ]
   },
@@ -543,6 +576,27 @@
         "country": "cn",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/Air_China_B-7878.jpg"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Airbus A321neo",
+    "id": "4646",
+    "labels": {
+      "Texture": [0]
+    },
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "Air Astana (Test registration)",
+        "author": "Ivan_Dmitriev & CP8888",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "kz",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a321neo/D-AZAN.jpg"
         ]
       }
     ]

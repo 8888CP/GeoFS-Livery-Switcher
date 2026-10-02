@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.7
-// @description  Aircraft-aware livery browser for GeoFS, with country filter. Press Shift to toggle.
+// @version      1.8
+// @description  Aircraft-aware livery browser for GeoFS, with country filter. Press your hotkey to toggle (default W). Hotkey is saved permanently.
 // @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
 // @match        https://geo-fs.com/geofs.php*
@@ -22,9 +22,20 @@
     flagsUrl   : 'https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/flags.json',
     title      : 'GeoFS Livery Switcher',
     startHidden: false,
-    toggleKey  : 'Shift',
+    toggleKey  : 'w',
     maxThumbs  : 3
   };
+
+  /* ============================================================
+   *  自定义热键持久化
+   *  存在 localStorage（站点级，刷新/重开仍保留），
+   *  除非点「重置」清掉，否则永远记住用户绑定过的按键。
+   * ============================================================ */
+  const STORAGE_KEY = 'gfl_toggle_key_v1';
+  try {
+    const _saved = localStorage.getItem(STORAGE_KEY);
+    if (_saved) CONFIG.toggleKey = _saved;
+  } catch (e) { /* localStorage 不可用时退回默认 'w' */ }
 
   const TYPES = [
     { id: 'all',      name: 'All Liveries',       icon: '✈' },
@@ -71,6 +82,16 @@
 
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
     c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+  function keyMatch(e, key) {
+    if (!key) return false;
+    const k = String(key), ek = String(e.key || '');
+    return k === ek || k.toLowerCase() === ek.toLowerCase();
+  }
+  function keyDisplayName(k) {
+    k = k || CONFIG.toggleKey;
+    return (k.length === 1) ? k.toUpperCase() : k;
+  }
 
   function resolveUrl(u, base) {
     if (!u) return '';
@@ -337,7 +358,7 @@
     <div class="gfl-header">
       <span class="gfl-logo"></span>
       <span class="gfl-title">${esc(CONFIG.title)}</span>
-      <button class="gfl-btn-close" title="Hide (Shift)">✕</button>
+      <button class="gfl-btn-close" title="Hide (hotkey)">✕</button>
     </div>
     <div class="gfl-search-wrap">
       <svg class="gfl-search-icon" viewBox="0 0 24 24">
@@ -352,8 +373,14 @@
     <div class="gfl-footer">
       <span class="gfl-count">0 liveries</span>
       <button class="gfl-test-btn" title="Test a livery">Test Livery</button>
+      <button class="gfl-key-btn" title="Adjust hotkey">Hotkey</button>
       <button class="gfl-reload" title="Reload JSON">↻</button>
-      <span class="gfl-hint"><kbd>Shift</kbd> to hide</span>
+      <span class="gfl-hint"><kbd id="gfl-key-hint">${esc(keyDisplayName(CONFIG.toggleKey))}</kbd> to hide</span>
+    </div>
+    <div class="gfl-key-panel gfl-hidden">
+      <input class="gfl-key-input" type="text" placeholder="Key (e.g. w / F2 / ArrowUp)" spellcheck="false" autocomplete="off" maxlength="20">
+      <button class="gfl-key-bind" title="Bind key">Bind</button>
+      <button class="gfl-key-reset" title="Reset to default">Reset</button>
     </div>
   `;
 
@@ -368,6 +395,11 @@
   const countEl     = $('.gfl-count');
   const reloadBtn   = $('.gfl-reload');
   const testBtn     = $('.gfl-test-btn');
+  const keyBtn      = $('.gfl-key-btn');
+  const keyPanel    = $('.gfl-key-panel');
+  const keyInput    = $('.gfl-key-input');
+  const keyBind     = $('.gfl-key-bind');
+  const keyReset    = $('.gfl-key-reset');
 
   /* ---------- Test modal ---------- */
   const modal = document.createElement('div');
@@ -584,14 +616,58 @@
     });
   }
   blockGameKeys(searchEl);
+  blockGameKeys(keyInput);
 
   window.addEventListener('keydown', e => {
     if (isTyping()) e.stopImmediatePropagation();
   }, true);
 
+  /* ============================================================
+   *  新增：自定义热键 —— 输入框绑定 / 重置，写入 localStorage
+   * ============================================================ */
+  function updateKeyHint() {
+    const el = document.getElementById('gfl-key-hint');
+    if (el) el.textContent = keyDisplayName(CONFIG.toggleKey);
+  }
+
+  function doBindKey() {
+    const raw = (keyInput.value || '').trim();
+    if (!raw) { toast('Please enter a key to bind'); return; }
+    CONFIG.toggleKey = raw;
+    try { localStorage.setItem(STORAGE_KEY, raw); } catch (e) { /* ignore */ }
+    updateKeyHint();
+    keyPanel.classList.add('gfl-hidden');
+    keyInput.value = '';
+    toast('Hotkey bound: ' + raw);
+    LOG('Hotkey bound to:', raw);
+  }
+
+  function doResetKey() {
+    CONFIG.toggleKey = 'w';
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    updateKeyHint();
+    keyInput.value = '';
+    keyPanel.classList.add('gfl-hidden');
+    toast('Reset to default key: W');
+  }
+
+  keyBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    keyPanel.classList.toggle('gfl-hidden');
+    if (!keyPanel.classList.contains('gfl-hidden')) {
+      keyInput.focus();
+      keyInput.select();
+    }
+  });
+  keyBind.addEventListener('click', e => { e.stopPropagation(); doBindKey(); });
+  keyReset.addEventListener('click', e => { e.stopPropagation(); doResetKey(); });
+  keyInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); doBindKey(); }
+  });
+
   /* ---------- CSS ---------- */
   const CSS = `
-  .gfl-panel{position:fixed;top:70px;left:24px;width:320px;max-height:min(58vh,440px);display:flex;flex-direction:column;border-radius:18px;z-index:2147483000;color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;background:linear-gradient(180deg,rgba(20,26,42,.90) 0%,rgba(11,15,24,.94) 100%);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.09);box-shadow:0 28px 70px -14px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);transition:opacity .24s ease,transform .24s cubic-bezier(.2,.85,.3,1),visibility .24s;transform-origin:top left;--gfl-mx:50%;--gfl-my:0%;overflow:hidden;user-select:none;-webkit-user-select:none}
+  .gfl-panel{position:fixed;top:70px;left:24px;width:360px;height:auto;max-height:min(82vh,720px);display:flex;flex-direction:column;border-radius:18px;z-index:2147483000;color:#e6edf8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:13px;line-height:1.45;background:linear-gradient(180deg,rgba(20,26,42,.90) 0%,rgba(11,15,24,.94) 100%);-webkit-backdrop-filter:blur(22px) saturate(160%);backdrop-filter:blur(22px) saturate(160%);border:1px solid rgba(255,255,255,.09);box-shadow:0 28px 70px -14px rgba(0,0,0,.85),0 0 0 1px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);transition:opacity .24s ease,transform .24s cubic-bezier(.2,.85,.3,1),visibility .24s;transform-origin:top left;--gfl-mx:50%;--gfl-my:0%;overflow:hidden;user-select:none;-webkit-user-select:none}
   .gfl-panel.gfl-hidden{opacity:0;visibility:hidden;pointer-events:none;transform:scale(.93) translateY(-10px)}
   .gfl-glow{position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity .35s ease;background:radial-gradient(420px circle at var(--gfl-mx) var(--gfl-my),rgba(88,166,255,.16),rgba(140,110,255,.07) 42%,transparent 68%)}
   .gfl-panel:hover .gfl-glow{opacity:1}
@@ -661,12 +737,23 @@
   .gfl-empty{padding:34px 16px;text-align:center;color:#5d6b80;font-size:12px}
   .gfl-empty span{display:block;font-size:24px;margin-bottom:8px;opacity:.4}
   .gfl-empty code{color:#8fa5c2;font-size:10.5px;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px;word-break:break-all;display:inline-block;margin-top:6px;max-width:100%}
-  .gfl-footer{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:9px 14px 11px;border-top:1px solid rgba(255,255,255,.055);font-size:10.5px;color:#5d6b80;flex-shrink:0;gap:8px}
+  .gfl-footer{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:9px 14px 11px;border-top:1px solid rgba(255,255,255,.055);font-size:10.5px;color:#5d6b80;flex-shrink:0;gap:8px;flex-wrap:wrap}
   .gfl-hint kbd{display:inline-block;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-width:2px;font-family:inherit;font-size:9.5px;color:#8fa0b8}
   .gfl-reload{width:20px;height:20px;border:none;border-radius:6px;background:rgba(255,255,255,.05);color:#8b98ad;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .18s,color .18s,transform .18s}
   .gfl-reload:hover{background:rgba(88,166,255,.18);color:#58a6ff;transform:rotate(180deg)}
   .gfl-test-btn{height:20px;padding:0 8px;border:1px solid rgba(255,154,60,.35);border-radius:6px;background:rgba(255,154,60,.12);color:#ffb266;font-size:9.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;transition:background .18s,color .18s,border-color .18s}
   .gfl-test-btn:hover{background:rgba(255,154,60,.22);color:#ffcb91;border-color:rgba(255,154,60,.55)}
+  .gfl-key-btn{height:20px;padding:0 8px;border:1px solid rgba(88,166,255,.35);border-radius:6px;background:rgba(88,166,255,.12);color:#9dcbff;font-size:9.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;transition:background .18s,color .18s,border-color .18s}
+  .gfl-key-btn:hover{background:rgba(88,166,255,.22);color:#cfe2ff;border-color:rgba(88,166,255,.55)}
+  .gfl-key-panel{display:flex;align-items:center;gap:6px;padding:8px 14px;border-top:1px solid rgba(255,255,255,.055);flex-shrink:0;background:rgba(255,255,255,.025)}
+  .gfl-key-panel.gfl-hidden{display:none}
+  .gfl-key-input{flex:1;min-width:0;height:30px;box-sizing:border-box;padding:0 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#e6edf8;font:inherit;font-size:12px;outline:none;transition:border-color .2s}
+  .gfl-key-input::placeholder{color:#5d6b80}
+  .gfl-key-input:focus{border-color:rgba(88,166,255,.5);background:rgba(88,166,255,.06)}
+  .gfl-key-bind,.gfl-key-reset{height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#cfdaea;font-size:11.5px;cursor:pointer;transition:background .18s,color .18s;flex-shrink:0}
+  .gfl-key-bind{background:rgba(88,166,255,.14);border-color:rgba(88,166,255,.3);color:#9dcbff}
+  .gfl-key-bind:hover{background:rgba(88,166,255,.26);color:#cfe2ff}
+  .gfl-key-reset:hover{background:rgba(255,255,255,.12);color:#e6edf8}
   #gfl-toast{position:fixed;left:50%;bottom:56px;transform:translate(-50%,16px);padding:9px 18px;border-radius:10px;background:rgba(16,22,34,.95);border:1px solid rgba(88,166,255,.32);box-shadow:0 12px 34px -10px rgba(0,0,0,.8),0 0 0 1px rgba(0,0,0,.4);color:#cfe2ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:12.5px;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);z-index:2147483001;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s cubic-bezier(.2,.8,.3,1)}
   #gfl-toast.gfl-show{opacity:1;transform:translate(-50%,0)}
   .gfl-modal{position:fixed;inset:0;z-index:2147483002;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s}
@@ -742,7 +829,7 @@
   $('.gfl-btn-close').addEventListener('click', () => setOpen(false));
 
   window.addEventListener('keydown', e => {
-    if (e.key !== CONFIG.toggleKey) return;
+    if (!keyMatch(e, CONFIG.toggleKey)) return;
     if (e.repeat) return;
     if (isTyping()) return;
     e.preventDefault();
@@ -763,6 +850,7 @@
 
   document.addEventListener('click', e => {
     document.querySelectorAll('.gfl-select.gfl-open').forEach(s => { if (!s.contains(e.target)) s.classList.remove('gfl-open'); });
+    if (keyPanel && !keyPanel.contains(e.target) && !keyBtn.contains(e.target)) keyPanel.classList.add('gfl-hidden');
   });
   panel.addEventListener('click', e => {
     document.querySelectorAll('.gfl-select.gfl-open').forEach(s => { if (!s.contains(e.target)) s.classList.remove('gfl-open'); });
@@ -951,6 +1039,8 @@
   W.GeoFSLiverySwitcher = {
     apply: applyLivery, state, reload: loadData, panel, setOpen, toggle,
     current: getCurrentAircraftId,
+    setHotkey: (k) => { if (k) { CONFIG.toggleKey = k; try { localStorage.setItem(STORAGE_KEY, k); } catch(e){} updateKeyHint(); } },
+    resetHotkey: doResetKey,
     debug: () => {
       const inst = getAircraftInstance();
       const g = W.geofs;
@@ -963,6 +1053,7 @@
       console.log('slot labels:', getSlotLabels());
       console.log('current group:', findCurrentGroup(state.groups));
       console.log('cached models:', getCachedModels());
+      console.log('hotkey:', CONFIG.toggleKey);
       console.log('-----------------------------------');
     }
   };
@@ -1015,8 +1106,11 @@
   }
 
   (function init() {
-    LOG('Version 1.7');
+    LOG('Version 1.8');
+    LOG('Hotkey:', CONFIG.toggleKey, '(stored:', !!localStorage.getItem(STORAGE_KEY), ')');
     LOG('Current aircraft ID:', getCurrentAircraftId());
+
+    updateKeyHint();
 
     requestAnimationFrame(() => {
       const r = panel.getBoundingClientRect();
