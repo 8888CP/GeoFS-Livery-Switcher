@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         GeoFS Livery Switcher
 // @namespace    https://www.geo-fs.com/
-// @version      1.8
+// @version      1.9
 // @description  Aircraft-aware livery browser for GeoFS, with country filter. Press your hotkey to toggle (default W). Hotkey is saved permanently.
 // @author       CP8888
 // @match        https://www.geo-fs.com/geofs.php*
@@ -425,6 +425,8 @@
   const modalCancel   = modal.querySelector('.gfl-modal-cancel');
   const modalBody     = modal.querySelector('.gfl-modal-body');
 
+  let currentModalLabels = null;
+
   function openModal() {
     invalidateModelCache();
     getCachedModels();
@@ -441,6 +443,7 @@
 
   function renderModalBody() {
     const labels = getSlotLabels();
+    currentModalLabels = labels;
 
     if (!labels || !labels.length) {
       modalBody.innerHTML = `
@@ -452,8 +455,14 @@
 
     modalBody.innerHTML = labels.map((item, i) => `
       <div class="gfl-slot-row" data-row="${i}">
-        <button class="gfl-slot-btn" data-row="${i}">LOAD IMAGE</button>
-        <span class="gfl-slot-name">${esc(item.name)}</span>
+        <div class="gfl-slot-top">
+          <button class="gfl-slot-btn" data-row="${i}">LOAD IMAGE</button>
+          <span class="gfl-slot-name">${esc(item.name)}</span>
+        </div>
+        <div class="gfl-slot-urlwrap">
+          <input class="gfl-slot-url" type="text" data-row="${i}" placeholder="Paste image URL (discord / imgbb / github…)" spellcheck="false" autocomplete="off">
+          <button class="gfl-slot-apply" data-row="${i}">Set</button>
+        </div>
       </div>
     `).join('');
 
@@ -464,6 +473,18 @@
 
       const btn = rowEl.querySelector('.gfl-slot-btn');
       btn.addEventListener('click', () => pickAndApply(row.slots));
+
+      const urlInput = rowEl.querySelector('.gfl-slot-url');
+      const applyBtn = rowEl.querySelector('.gfl-slot-apply');
+
+      function applyFromUrl() {
+        const url = (urlInput.value || '').trim();
+        if (!url) { toast('Enter an image URL first'); return; }
+        applyTestTexture(url, row.slots);
+        LOG('Applied URL to slots [' + row.slots + ']:', url);
+      }
+      applyBtn.addEventListener('click', applyFromUrl);
+      blockGameKeys(urlInput);
 
       rowEl.addEventListener('dragover', e => {
         e.preventDefault();
@@ -619,7 +640,28 @@
   blockGameKeys(keyInput);
 
   window.addEventListener('keydown', e => {
-    if (isTyping()) e.stopImmediatePropagation();
+    // 打字时拦截按键避免打扰游戏；但放行 Enter，
+    // 让输入框内「回车应用」的自定义 handler 能正常触发。
+    if (isTyping() && e.key !== 'Enter') e.stopImmediatePropagation();
+  }, true);
+
+  /* 在捕获阶段统一处理 Test Livery 输入框的回车，
+   * 确保即使 GeoFS 接管了键盘，回车也能先于它触发应用。 */
+  window.addEventListener('keydown', e => {
+    const el = document.activeElement;
+    if (!el || !el.classList || !el.classList.contains('gfl-slot-url')) return;
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    e.stopPropagation();
+    const rowEl = el.closest('.gfl-slot-row');
+    if (!rowEl) return;
+    const rowIdx = Number(rowEl.dataset.row);
+    const row = currentModalLabels ? currentModalLabels[rowIdx] : null;
+    if (!row) return;
+    const url = (el.value || '').trim();
+    if (!url) { toast('Enter an image URL first'); return; }
+    applyTestTexture(url, row.slots);
+    LOG('Applied URL to slots [' + row.slots + ']:', url);
   }, true);
 
   /* ============================================================
@@ -772,13 +814,20 @@
   .gfl-modal-body::-webkit-scrollbar-thumb:hover{background:rgba(88,166,255,.55)}
   .gfl-modal-empty{text-align:center;padding:30px 16px;color:#5d6b80;font-size:12px}
   .gfl-modal-empty code{color:#8fa5c2;background:rgba(255,255,255,.05);padding:2px 5px;border-radius:4px}
-  .gfl-slot-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:6px;border-radius:10px;border:2px dashed transparent;transition:border-color .18s ease,background .18s ease}
+  .gfl-slot-row{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;padding:9px;border-radius:10px;border:2px dashed transparent;transition:border-color .18s ease,background .18s ease}
   .gfl-slot-row:last-child{margin-bottom:0}
   .gfl-slot-row.gfl-row-dragover{border-color:rgba(88,166,255,.70);background:rgba(88,166,255,.12)}
+  .gfl-slot-top{display:flex;align-items:center;gap:12px}
   .gfl-slot-btn{flex-shrink:0;width:150px;height:40px;border:none;border-radius:8px;background:linear-gradient(180deg,#ff9a3c 0%,#e07820 100%);color:#fff;font-size:12.5px;font-weight:600;letter-spacing:.5px;cursor:pointer;pointer-events:auto;transition:transform .12s ease,box-shadow .18s ease,filter .18s ease;box-shadow:0 6px 14px -6px rgba(224,120,32,.55),inset 0 1px 0 rgba(255,255,255,.25)}
   .gfl-slot-btn:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 10px 20px -8px rgba(224,120,32,.7),inset 0 1px 0 rgba(255,255,255,.3)}
   .gfl-slot-btn:active{transform:translateY(0);filter:brightness(.95)}
   .gfl-slot-name{flex:1;font-size:13px;color:#cfdaea;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+  .gfl-slot-urlwrap{display:flex;align-items:center;gap:6px}
+  .gfl-slot-url{flex:1;min-width:0;height:30px;box-sizing:border-box;padding:0 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#e6edf8;font:inherit;font-size:11.5px;outline:none;transition:border-color .2s}
+  .gfl-slot-url::placeholder{color:#5d6b80}
+  .gfl-slot-url:focus{border-color:rgba(88,166,255,.5);background:rgba(88,166,255,.06)}
+  .gfl-slot-apply{height:30px;padding:0 14px;border-radius:8px;border:1px solid rgba(88,166,255,.3);background:rgba(88,166,255,.14);color:#9dcbff;font-size:11.5px;font-weight:500;cursor:pointer;flex-shrink:0;transition:background .18s,color .18s}
+  .gfl-slot-apply:hover{background:rgba(88,166,255,.26);color:#cfe2ff}
   .gfl-modal-footer{display:flex;justify-content:flex-end;padding:12px 16px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
   .gfl-modal-cancel{height:32px;padding:0 14px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cfdaea;font-size:12px;cursor:pointer;transition:background .18s,color .18s}
   .gfl-modal-cancel:hover{background:rgba(255,255,255,.10);color:#e6edf8}
@@ -1106,7 +1155,7 @@
   }
 
   (function init() {
-    LOG('Version 1.8');
+    LOG('Version 1.9');
     LOG('Hotkey:', CONFIG.toggleKey, '(stored:', !!localStorage.getItem(STORAGE_KEY), ')');
     LOG('Current aircraft ID:', getCurrentAircraftId());
 
