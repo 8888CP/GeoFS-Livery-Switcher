@@ -27,9 +27,11 @@
   { "id": "ve",     "name": "Venezuela",     "code": "ve", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/ve.svg", "emoji": "🇻🇪" },
   { "id": "uz",     "name": "Uzbekistan",    "code": "uz", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/uz.svg", "emoji": "🇺🇿" },
   { "id": "kz",     "name": "Kazakhstan",    "code": "kz", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/kz.svg", "emoji": "🇰🇿" },
+  { "id": "dz",     "name": "Algeria",       "code": "dz", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/dz.svg", "emoji": "🇩🇿" },
+  { "id": "eg",     "name": "Egypt",         "code": "eg", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/eg.svg", "emoji": "🇪🇬" },
   { "id": "dk",     "name": "Denmark",       "code": "dk", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/dk.svg", "emoji": "🇩🇰" },
   { "id": "no",     "name": "Norway",        "code": "no", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/no.svg", "emoji": "🇳🇴" },
-  { "id": "se",     "name": "Sweden",        "code": "se", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/se.svg", "emoji": "🇸🇪" },
+  { "id": "pt",     "name": "Portugal",      "code": "pt", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/pt.svg", "emoji": "🇵🇹" },
   { "id": "sa",     "name": "Saudi Arabia",  "code": "sa", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/sa.svg", "emoji": "🇸🇦" },
   { "id": "hk",     "name": "Hong Kong, China", "code": "hk", "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/hk.svg", "emoji": "🇭🇰" },
   { "id": "other",  "name": "Other / Intl" }

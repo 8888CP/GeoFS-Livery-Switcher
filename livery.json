@@ -109,8 +109,8 @@
         ]
       },
       {
-        "name": "Air Canada (Star Alliance livery)",
-        "author": "KN5290",
+        "name": "Air Canada (Star Alliance livery V1)",
+        "author": "CP8888",
         "type": "real",
         "tags": ["real", "pax", "special"],
         "country": "ca",
@@ -355,7 +355,7 @@
         "author": "Nicky",
         "type": "real",
         "tags": ["virtual", "pax", "special"],
-        "country": "",
+        "country": "de",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/D-EUGN.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/D-EUGN.png"
@@ -403,6 +403,116 @@
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/airbusp2f.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/airbusp2f.png"
+        ]
+      },
+      {
+        "name": "Air Canada (Fly the Flag livery)",
+        "author": "Yicha",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "ca",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GEGC.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/C-GEGC.png"
+        ]
+      },
+      {
+        "name": "Thai Airways (Star Alliance livery)",
+        "author": "YX0321",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "th",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/thaistar.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/thaistar.png"
+        ]
+      },
+      {
+        "name": "Air Canada (Star Alliance livery V2)",
+        "author": "CP8888",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "ca",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/aircanadav2.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/aircanadav2.png"
+        ]
+      },
+      {
+        "name": "Air Canada (Star Alliance livery V3)",
+        "author": "CP8888",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "ca",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/aircanadav3.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/aircanadav3.png"
+        ]
+      },
+      {
+        "name": "SWISS (red nose)",
+        "author": "31124ya & CP8888",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "ca",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/swissred.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/swissred.png"
+        ]
+      },
+      {
+        "name": "Air China (Star Alliance livery, no flag)",
+        "author": "KN5290",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "cn",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/B-5912.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/B-5912.png"
+        ]
+      },
+      {
+        "name": "EgyptAir",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "eg",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EgyptAir.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EgyptAir.png"
+        ]
+      },
+      {
+        "name": "World2Fly Spain",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "es",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-LHR.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/EC-LHR.png"
+        ]
+      },
+      {
+        "name": "Jet2 (Leased from World2Fly Portugal)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "pt",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/CS-WFP.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/CS-WFP.png"
+        ]
+      },
+      {
+        "name": "Skymark Airlines",
+        "author": "kopinokami222",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "jp",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/JA330A.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/JA330A.png"
         ]
       }
     ]
@@ -577,6 +687,16 @@
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/Air_China_B-7878.jpg"
         ]
+      },
+      {
+        "name": "Lufthansa (new design)",
+        "author": "CP8888",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/lufthansa_new.png"
+        ]
       }
     ]
   },
@@ -597,6 +717,69 @@
         "country": "kz",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a321neo/D-AZAN.jpg"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Airbus A320-232",
+    "id": "3011",
+    "labels": {
+      "Texture": [0]
+    },
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "JetBlue (Super Mario livery)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "pax", "special"],
+        "country": "us",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a320-232/N561JB.png"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Boeing b737 max 8",
+    "id": "2769",
+    "labels": {
+      "Texture": [0]
+    },
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "Air Algeria",
+        "author": "Nicky",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "dz",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b737max8/7T-VLQ.png"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Airbus A320neo",
+    "id": "2871",
+    "labels": {
+      "Texture": [0]
+    },
+    "index": [0],
+    "parts": [0],
+    "liveries": [
+      {
+        "name": "Chengdu Airlines",
+        "author": "YX0321",
+        "type": "real",
+        "tags": ["real", "pax"],
+        "country": "cn",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a320neo/chengdu.png"
         ]
       }
     ]
