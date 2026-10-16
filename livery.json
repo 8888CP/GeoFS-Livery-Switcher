@@ -799,6 +799,106 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/JA330A.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/JA330A.png"
         ]
+      },
+      {
+        "name": "Hawaiian Airlines (Amazon Prime Air)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "cargo"
+        ],
+        "country": "us",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Prime_Air.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Prime_Air.png"
+        ]
+      },
+      {
+        "name": "Saudia (Saudi National Day livery)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax",
+          "special"
+        ],
+        "country": "sa",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_National_Day.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_National_Day.png"
+        ]
+      },
+      {
+        "name": "Saudia (Leased from SmartLynx Malta)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "mt",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_9H.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_9H.png"
+        ]
+      },
+      {
+        "name": "Saudia (Leased from Wamos Air)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "es",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_Ec.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Saudia_Ec.png"
+        ]
+      },
+      {
+        "name": "Garuda Indonesia (Leased from World2Fly Portugal)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "pt",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Garuda_W2F.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Garuda_W2F.png"
+        ]
+      },
+      {
+        "name": "Air Europa",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "es",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Air_Europa.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Air_Europa.png"
+        ]
+      },
+      {
+        "name": "Aer Lingus (old design)",
+        "author": "Nicky",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax",
+          "special"
+        ],
+        "country": "ie",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aer_Lingus.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a333/Aer_Lingus.png"
+        ]
       }
     ],
     "labels": {
@@ -847,6 +947,19 @@
         ]
       },
       {
+        "name": "Delta Air Lines",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "us",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/Delta.jpg"
+        ]
+      },
+      {
         "name": "TwinAir Express (Argyle Air Cargo livery)",
         "author": "Nicky",
         "type": "virtual",
@@ -858,6 +971,33 @@
         "country": "us",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738nw/FLX_B738.png"
+        ]
+      },
+      {
+        "name": "SunExpress (ex. Pobeda)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "tr",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738/SunExpress_ex_Pobeda.jpg"
+        ]
+      },
+      {
+        "name": "Skymark Airlines (Skyteam livery)",
+        "author": "kopinokami222",
+        "type": "virtual",
+        "tags": [
+          "virtual",
+          "pax",
+          "special"
+        ],
+        "country": "jp",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b738/skymark_skyteam.png"
         ]
       }
     ],
@@ -1070,6 +1210,23 @@
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png",
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/JEX_JAL.png"
+        ]
+      },
+      {
+        "name": "Solaseed Air",
+        "author": "kopinokami222",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "jp",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/solaseed_air.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/solaseed_air.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/solaseed_air.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/solaseed_air.png",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b734/solaseed_air.png"
         ]
       }
     ]
@@ -1331,6 +1488,19 @@
         "country": "de",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/lufthansa_new.png"
+        ]
+      },
+      {
+        "name": "Air Astana",
+        "author": "CP8888",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "kz",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b789/Air_Astana.jpg"
         ]
       }
     ]

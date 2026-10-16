@@ -257,6 +257,20 @@
     "emoji": "🇨🇾"
   },
   {
+    "id": "ie",
+    "name": "Ireland",
+    "code": "ie",
+    "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/ie.svg",
+    "emoji": "🇮🇳"
+  },
+  {
+    "id": "mt",
+    "name": "Malta",
+    "code": "mt",
+    "flag": "https://cdn.jsdelivr.net/npm/flag-icons@7/flags/4x3/mt.svg",
+    "emoji": "🇲🇹"
+  },
+  {
     "id": "other",
     "name": "Other / Intl"
   }
