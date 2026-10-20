@@ -163,6 +163,33 @@
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a320neo/chengdu.png"
         ]
+      },
+      {
+        "name": "Lufthansa (100th anniversary livery)",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax",
+          "special"
+        ],
+        "country": "de",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a320neo/Lufthansa_100.jpg"
+        ]
+      },
+      {
+        "name": "Swiss International Air Lines",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "ch",
+        "texture": [
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/a320neo/Swiss.jpg"
+        ]
       }
     ],
     "labels": {
@@ -1592,6 +1619,42 @@
         "country": "dz",
         "texture": [
           "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b737max8/7T-VLQ.png"
+        ]
+      }
+    ]
+  },
+  {
+    "aircraft": "Boeing b777-300ER",
+    "id": "25",
+    "labels": {
+      "Specular shader": [
+        0
+      ],
+      "Texture": [
+        1
+      ]
+    },
+    "index": [
+      2,
+      3
+    ],
+    "parts": [
+      0,
+      0
+    ],
+    "liveries": [
+      {
+        "name": "Swiss International Air Lines",
+        "author": "Ivan_Dmitriev",
+        "type": "real",
+        "tags": [
+          "real",
+          "pax"
+        ],
+        "country": "ch",
+        "texture": [
+          "/models/aircraft/premium/777_300/specular_0.jpg",
+          "https://raw.githubusercontent.com/8888CP/GeoFS-Livery-Switcher/refs/heads/main/liveries/b777w/SWISS.jpg"
         ]
       }
     ]
